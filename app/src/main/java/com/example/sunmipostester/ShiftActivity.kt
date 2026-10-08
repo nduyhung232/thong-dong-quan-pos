@@ -94,6 +94,8 @@ class ShiftActivity : SecuredActivity() {
             "${getString(R.string.shift_opening_cash)}: ${TextFormat.vnd(summary.shift.openingCash)}"
         binding.shiftCashSales.text =
             "${getString(R.string.shift_cash_sales)}: ${TextFormat.vnd(summary.cashSales)}"
+        binding.shiftTransferSales.text =
+            "Thu chuyển khoản: ${TextFormat.vnd(summary.transferSales)}"
         binding.shiftCashExpenses.text = "Chi tiền mặt: ${TextFormat.vnd(summary.cashExpenses)}"
         binding.shiftTotalSales.text =
             "${getString(R.string.shift_total_sales)}: ${TextFormat.vnd(summary.totalSales)}"
@@ -157,8 +159,12 @@ class ShiftActivity : SecuredActivity() {
             else -> "${getString(R.string.shift_diff_short)} ${TextFormat.vnd(-diff)}"
         }
         val msg = buildString {
-            append("${getString(R.string.shift_expected_cash)}: ${TextFormat.vnd(closed.expectedCash)}\n")
+            append("Thu tiền mặt: ${TextFormat.vnd(closed.cashSales)}\n")
+            append("Thu chuyển khoản: ${TextFormat.vnd(closed.transferSales)}\n")
             append("Chi tiền mặt: ${TextFormat.vnd(closed.cashExpenses)}\n")
+            append("Tổng doanh thu ca: ${TextFormat.vnd(closed.totalSales)} (${closed.orderCount} đơn)\n")
+            append("--------------------------------\n")
+            append("${getString(R.string.shift_expected_cash)}: ${TextFormat.vnd(closed.expectedCash)}\n")
             append("${getString(R.string.shift_counted_cash)}: ${TextFormat.vnd(closed.shift.countedCash ?: 0)}\n")
             closed.shift.cashBreakdown?.takeIf { it.isNotBlank() }?.let { append("Mệnh giá: $it\n") }
             append("${getString(R.string.shift_difference)}: $verdict")

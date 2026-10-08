@@ -50,6 +50,8 @@ data class TableOrderDraft(
 data class ShiftSummary(
     val shift: ShiftEntity,
     val cashSales: Int,
+    val transferSales: Int = 0,
+    val cardSales: Int = 0,
     val totalSales: Int,
     val orderCount: Int,
     val cashExpenses: Int,

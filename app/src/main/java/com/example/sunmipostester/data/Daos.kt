@@ -215,6 +215,24 @@ interface ShiftDao {
 
     @Query("SELECT COUNT(*) FROM orders WHERE shiftId = :shiftId AND status = 'PAID'")
     suspend fun paidCountOfShift(shiftId: Long): Int
+
+    /** Non-cash bank transfer revenue for PAID orders in the shift. */
+    @Query(
+        """
+        SELECT COALESCE(SUM(total), 0) FROM orders
+        WHERE shiftId = :shiftId AND status = 'PAID' AND paymentMethod = 'TRANSFER'
+        """
+    )
+    suspend fun transferSalesOfShift(shiftId: Long): Int
+
+    /** Card revenue for PAID orders in the shift. */
+    @Query(
+        """
+        SELECT COALESCE(SUM(total), 0) FROM orders
+        WHERE shiftId = :shiftId AND status = 'PAID' AND paymentMethod = 'CARD'
+        """
+    )
+    suspend fun cardSalesOfShift(shiftId: Long): Int
 }
 
 /** Aggregated revenue split by payment method, for the report screen. */

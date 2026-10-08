@@ -227,6 +227,7 @@ class SaleActivity : AppCompatActivity() {
                 Nhân viên: ${summary.shift.staffName ?: "Chưa rõ"}
                 Tiền đầu ca: ${TextFormat.vnd(summary.shift.openingCash)}
                 Thu tiền mặt: ${TextFormat.vnd(summary.cashSales)}
+                Thu chuyển khoản: ${TextFormat.vnd(summary.transferSales)}
                 Tổng chi tiền mặt: ${TextFormat.vnd(summary.cashExpenses)}
                 Tổng tiền mặt dự kiến: ${TextFormat.vnd(summary.expectedCash)}
                 Tổng doanh thu: ${TextFormat.vnd(summary.totalSales)} (${summary.orderCount} đơn)
@@ -251,8 +252,10 @@ class SaleActivity : AppCompatActivity() {
                                     .setTitle("Đã đóng ca thành công")
                                     .setMessage(buildString {
                                         append("Doanh thu tiền mặt: ${TextFormat.vnd(closed.cashSales)}\n")
+                                        append("Thu chuyển khoản: ${TextFormat.vnd(closed.transferSales)}\n")
                                         append("Chi tiền mặt: ${TextFormat.vnd(closed.cashExpenses)}\n")
-                                        append("Thực nộp: ${TextFormat.vnd(closed.shift.countedCash ?: 0)} $diffMsg\n")
+                                        append("Tổng doanh thu: ${TextFormat.vnd(closed.totalSales)}\n")
+                                        append("Thực nộp tiền két: ${TextFormat.vnd(closed.shift.countedCash ?: 0)} $diffMsg\n")
                                         closed.shift.cashBreakdown?.takeIf { it.isNotBlank() }?.let { append("Mệnh giá: $it") }
                                     })
                                     .setPositiveButton("OK") { _, _ -> checkActiveShiftAndRefresh() }

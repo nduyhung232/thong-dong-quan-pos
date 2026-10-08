@@ -282,12 +282,16 @@ class PosRepository(context: Context) {
 
     private suspend fun buildSummary(shift: ShiftEntity): ShiftSummary {
         val cashSales = shiftDao.cashSalesOfShift(shift.id)
+        val transferSales = shiftDao.transferSalesOfShift(shift.id)
+        val cardSales = shiftDao.cardSalesOfShift(shift.id)
         val totalSales = shiftDao.totalSalesOfShift(shift.id)
         val orderCount = shiftDao.paidCountOfShift(shift.id)
         val cashExpenses = cashExpenseDao.totalForShift(shift.id)
         return ShiftSummary(
             shift = shift,
             cashSales = cashSales,
+            transferSales = transferSales,
+            cardSales = cardSales,
             totalSales = totalSales,
             orderCount = orderCount,
             cashExpenses = cashExpenses,
