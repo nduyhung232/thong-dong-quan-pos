@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Thong Dong Brand Palette -->
+    <color name="ic_launcher_background">#FAF7F0</color>
+    <color name="brand_green">#313910</color>
+    <color name="brand_green_dark">#222700</color>
+    <color name="brand_cream">#FAF7F0</color>
+    <color name="brand_terracotta">#9B4A2A</color>
+    <color name="brand_gold">#D4B477</color>
+</resources>

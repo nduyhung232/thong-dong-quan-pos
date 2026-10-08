@@ -1,0 +1,214 @@
+[
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_backup.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_backup.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_product_management.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_product_management.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_product.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_product.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_receipt_logo_compact_80mm.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\receipt_logo_compact_80mm.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_edit_product.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_edit_product.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-xhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_payment.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_payment.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_sync_config.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_sync_config.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_receipt_logo_banner_80mm.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\receipt_logo_banner_80mm.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_receipt_template.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\receipt_template.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_open_shift.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_open_shift.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_logo_thong_dong.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\logo_thong_dong.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_receipt_preview.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_receipt_preview.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_cart_line.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_cart_line.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_logo_thong_dong_icon.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\logo_thong_dong_icon.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-xxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_receipt_logo_80mm.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\receipt_logo_80mm.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_shift.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_shift.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-xxxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_order_management.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_order_management.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_logo_thong_dong_horizontal.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\logo_thong_dong_horizontal.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_revenue_report.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_revenue_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_category.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_category.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_checkout.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_checkout.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_kitchen_row.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_kitchen_row.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_login.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_shift.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_shift.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-xxxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_setup.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_setup.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_receipt_row.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_receipt_row.xml"
+    },
+    {
+        "merged": "com.example.sunmipostester.app-merged_res-38:/layout_item_receipt_row.xml.flat",
+        "source": "com.example.sunmipostester.app-main-40:/layout/item_receipt_row.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_manage_product.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_manage_product.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_staff.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_staff.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_crash_log.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_crash_log.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-mdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-xxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "com.example.sunmipostester.app-merged_res-38:/layout_receipt_template.xml.flat",
+        "source": "com.example.sunmipostester.app-main-40:/layout/receipt_template.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-hdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_home.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_sale.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_sale.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_kitchen_ticket_template.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\kitchen_ticket_template.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_sync_settings.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_sync_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_activity_staff_management.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\activity_staff_management.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_cash_amount.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_cash_amount.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\mipmap-mdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\mipmap-mdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_dialog_edit_staff.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\dialog_edit_staff.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\layout_item_order.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\layout\\item_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-merged_res-38:\\drawable_ic_launcher_foreground.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.2\\com.example.sunmipostester.app-main-40:\\drawable\\ic_launcher_foreground.png"
+    }
+]
