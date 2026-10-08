@@ -23,6 +23,7 @@ class PosRepository(context: Context) {
     private val discountCodeDao = db.discountCodeDao()
     private val tableDraftDao = db.tableDraftDao()
     private val cashExpenseDao = db.cashExpenseDao()
+    private val toppingDao = db.toppingDao()
 
     // ---- Products --------------------------------------------------------
 
@@ -130,12 +131,17 @@ class PosRepository(context: Context) {
             syncedAtMs = null
         )
         val items = lines.map { line ->
+            val fullName = if (line.selectedToppings.isNotEmpty()) {
+                "${line.product.name} (+${line.toppingsDisplay})"
+            } else {
+                line.product.name
+            }
             OrderItemEntity(
                 orderId = 0, // assigned inside the transaction
                 productId = line.product.id,
                 productSyncId = line.product.syncId,
-                productName = line.product.name,
-                unitPrice = line.product.price,
+                productName = fullName,
+                unitPrice = line.unitPriceWithToppings,
                 quantity = line.quantity
             )
         }
@@ -547,6 +553,43 @@ class PosRepository(context: Context) {
     suspend fun markOrderSynced(syncId: String, atMs: Long) = io { orderDao.markSynced(syncId, atMs) }
 
     suspend fun markShiftSynced(syncId: String, atMs: Long) = io { shiftDao.markSynced(syncId, atMs) }
+
+    // ---- Toppings --------------------------------------------------------
+
+    suspend fun upsertServerTopping(
+        syncId: String,
+        name: String,
+        price: Int,
+        active: Boolean,
+        updatedAtMs: Long
+    ) = io {
+        val existing = toppingDao.getBySyncId(syncId)
+        val entity = ToppingEntity(
+            id = existing?.id ?: 0,
+            syncId = syncId,
+            name = name,
+            price = price,
+            active = active,
+            updatedAtMs = updatedAtMs
+        )
+        toppingDao.upsert(entity)
+    }
+
+    suspend fun setProductToppings(productSyncId: String, toppingSyncIds: List<String>) = io {
+        toppingDao.clearProductToppings(productSyncId)
+        if (toppingSyncIds.isNotEmpty()) {
+            val links = toppingSyncIds.map { ProductToppingEntity(productSyncId, it) }
+            toppingDao.insertProductToppings(links)
+        }
+    }
+
+    suspend fun getToppingsForProduct(productSyncId: String): List<ToppingEntity> = io {
+        toppingDao.getToppingsForProduct(productSyncId)
+    }
+
+    suspend fun getAllActiveToppings(): List<ToppingEntity> = io {
+        toppingDao.getAllActive()
+    }
 
     // ---- Export ----------------------------------------------------------
 

@@ -5,9 +5,12 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingVertical="6dp"
-    android:paddingHorizontal="4dp">
+    android:paddingHorizontal="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground">
 
-    <!-- Name + line total -->
+    <!-- Name + toppings + line total -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -21,8 +24,17 @@
             android:text="Cà phê sữa"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:maxLines="1"
+            android:maxLines="2"
             android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/lineToppings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+ Trân châu đen"
+            android:textColor="#00796B"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/lineTotal"

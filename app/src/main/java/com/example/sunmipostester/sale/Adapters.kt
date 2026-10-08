@@ -78,10 +78,11 @@ class ProductAdapter(
     override fun getItemCount() = items.size
 }
 
-/** Cart lines with quantity steppers. */
+/** Cart lines with quantity steppers and item click for toppings. */
 class CartAdapter(
-    private val onPlus: (Long) -> Unit,
-    private val onMinus: (Long) -> Unit
+    private val onPlus: (CartLine) -> Unit,
+    private val onMinus: (CartLine) -> Unit,
+    private val onItemClick: (CartLine) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.VH>() {
 
     private val items = mutableListOf<CartLine>()
@@ -102,10 +103,18 @@ class CartAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val l = items[position]
         holder.binding.lineName.text = l.product.name
+        if (l.selectedToppings.isNotEmpty()) {
+            holder.binding.lineToppings.visibility = android.view.View.VISIBLE
+            val toppingTotal = l.selectedToppings.sumOf { it.price }
+            holder.binding.lineToppings.text = "+ ${l.toppingsDisplay} (+${TextFormat.vnd(toppingTotal)})"
+        } else {
+            holder.binding.lineToppings.visibility = android.view.View.GONE
+        }
         holder.binding.lineTotal.text = TextFormat.vnd(l.lineTotal)
         holder.binding.lineQty.text = l.quantity.toString()
-        holder.binding.btnPlus.setOnClickListener { onPlus(l.product.id) }
-        holder.binding.btnMinus.setOnClickListener { onMinus(l.product.id) }
+        holder.binding.btnPlus.setOnClickListener { onPlus(l) }
+        holder.binding.btnMinus.setOnClickListener { onMinus(l) }
+        holder.binding.root.setOnClickListener { onItemClick(l) }
     }
 
     override fun getItemCount() = items.size

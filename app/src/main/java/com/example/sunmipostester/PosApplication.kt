@@ -27,5 +27,8 @@ class PosApplication : Application() {
                 kotlin.system.exitProcess(10)
             }
         }
+
+        // Lên lịch tự động PUSH dữ liệu lên server theo các mốc giờ 10h, 15h, 18h, 21h
+        com.example.sunmipostester.sync.AutoPushScheduler.scheduleNext(this)
     }
 }

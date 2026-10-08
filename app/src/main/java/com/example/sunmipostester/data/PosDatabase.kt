@@ -57,9 +57,11 @@ class Converters {
         DiscountCodeEntity::class,
         TableDraftEntity::class,
         TableDraftItemEntity::class,
-        CashExpenseEntity::class
+        CashExpenseEntity::class,
+        ToppingEntity::class,
+        ProductToppingEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -73,6 +75,7 @@ abstract class PosDatabase : RoomDatabase() {
     abstract fun discountCodeDao(): DiscountCodeDao
     abstract fun tableDraftDao(): TableDraftDao
     abstract fun cashExpenseDao(): CashExpenseDao
+    abstract fun toppingDao(): ToppingDao
 
     companion object {
         @Volatile
@@ -89,7 +92,7 @@ abstract class PosDatabase : RoomDatabase() {
                 PosDatabase::class.java,
                 "pos.db"
             )
-                .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                 // Unsupported upgrade paths remain destructive; add explicit
                 // migrations before deploying any further schema changes.
                 .fallbackToDestructiveMigration()
@@ -137,6 +140,20 @@ abstract class PosDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE `cash_expenses_rebuild` RENAME TO `cash_expenses`")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_cash_expenses_shiftId` ON `cash_expenses` (`shiftId`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_cash_expenses_createdAtMs` ON `cash_expenses` (`createdAtMs`)")
+            }
+        }
+
+        private val MIGRATION_7_8 = object : androidx.room.migration.Migration(7, 8) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `toppings` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `syncId` TEXT NOT NULL, `name` TEXT NOT NULL, `price` INTEGER NOT NULL, `active` INTEGER NOT NULL, `updatedAtMs` INTEGER NOT NULL)"
+                )
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_toppings_syncId` ON `toppings` (`syncId`)")
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `product_toppings` (`productSyncId` TEXT NOT NULL, `toppingSyncId` TEXT NOT NULL, PRIMARY KEY(`productSyncId`, `toppingSyncId`))"
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_product_toppings_productSyncId` ON `product_toppings` (`productSyncId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_product_toppings_toppingSyncId` ON `product_toppings` (`toppingSyncId`)")
             }
         }
     }

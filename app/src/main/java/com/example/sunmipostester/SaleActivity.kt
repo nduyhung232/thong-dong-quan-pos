@@ -95,16 +95,16 @@ class SaleActivity : AppCompatActivity() {
         binding.productGrid.adapter = productAdapter
 
         cartAdapter = CartAdapter(
-            onPlus = { productId ->
-                val line = OrderStore.currentLines().firstOrNull { it.product.id == productId }
-                if (line != null) {
-                    OrderStore.add(line.product)
-                    refreshCart()
-                }
-            },
-            onMinus = { productId ->
-                OrderStore.decrease(productId)
+            onPlus = { line ->
+                OrderStore.increaseLine(line.lineId)
                 refreshCart()
+            },
+            onMinus = { line ->
+                OrderStore.decreaseLine(line.lineId)
+                refreshCart()
+            },
+            onItemClick = { line ->
+                showToppingDialog(line)
             }
         )
         binding.cartList.layoutManager = LinearLayoutManager(this)
@@ -299,7 +299,6 @@ class SaleActivity : AppCompatActivity() {
         val dialogBinding = DialogCheckoutBinding.inflate(layoutInflater)
         val orderLines = OrderStore.currentLines()
         val orderSubtotal = orderLines.sumOf { it.lineTotal }
-        var discountAuthorized = false
         var discountValue = 0
         var payable = orderSubtotal
 
@@ -317,10 +316,10 @@ class SaleActivity : AppCompatActivity() {
 
         fun refreshPreview() {
             val enteredValue = MoneyInput.parse(dialogBinding.discountInput.text) ?: 0
-            val type = if (discountAuthorized) selectedDiscountType() else DiscountType.NONE
+            val type = if (enteredValue > 0) selectedDiscountType() else DiscountType.NONE
             val result = DiscountCalculator.compute(orderSubtotal, type, enteredValue)
             payable = result.total
-            discountValue = if (discountAuthorized) enteredValue else 0
+            discountValue = if (enteredValue > 0) enteredValue else 0
             dialogBinding.discountResult.text =
                 "Tiền giảm: ${TextFormat.vnd(result.discountAmount)} · Cần trả: ${TextFormat.vnd(result.total)}"
             dialogBinding.checkoutTotal.text = "Tổng thanh toán: ${TextFormat.vnd(result.total)}"
@@ -353,67 +352,6 @@ class SaleActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = refreshPreview()
             override fun afterTextChanged(s: Editable?) = Unit
         })
-        dialogBinding.btnAuthorizeDiscount.setOnClickListener {
-            if (discountAuthorized) {
-                discountAuthorized = false
-                dialogBinding.discountControls.visibility = View.GONE
-                dialogBinding.btnAuthorizeDiscount.text = "Nhập PIN"
-                refreshPreview()
-                return@setOnClickListener
-            }
-            val pinInput = android.widget.EditText(this).apply {
-                hint = "PIN nhân viên đang đăng nhập"
-                inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
-            }
-            val pinDialog = AlertDialog.Builder(this)
-                .setTitle("Xác thực giảm giá")
-                .setMessage("Nhập PIN của nhân viên đang đăng nhập/mở ca")
-                .setView(pinInput)
-                .setPositiveButton("XÁC NHẬN", null)
-                .setNegativeButton("HỦY", null)
-                .create()
-            pinDialog.setOnShowListener {
-                pinDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener pinSubmit@{
-                    val pin = pinInput.text?.toString().orEmpty()
-                    pinInput.text?.clear()
-                    val userId = Session.current?.id
-                    if (userId == null) {
-                        Toast.makeText(this, "Không có nhân viên đang đăng nhập", Toast.LENGTH_SHORT).show()
-                        return@pinSubmit
-                    }
-                    if (!PinHasher.isPolicyValid(pin)) {
-                        Toast.makeText(this, "PIN không đúng", Toast.LENGTH_SHORT).show()
-                        return@pinSubmit
-                    }
-                    val submitButton = pinDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    submitButton.isEnabled = false
-                    submitButton.text = "ĐANG KIỂM TRA…"
-                    pinInput.isEnabled = false
-                    lifecycleScope.launch {
-                        try {
-                            if (repo.authenticate(userId, pin) != null) {
-                                discountAuthorized = true
-                                dialogBinding.discountControls.visibility = View.VISIBLE
-                                dialogBinding.btnAuthorizeDiscount.text = "Bỏ giảm giá"
-                                refreshPreview()
-                                pinDialog.dismiss()
-                            } else {
-                                Toast.makeText(this@SaleActivity, "PIN không đúng", Toast.LENGTH_SHORT).show()
-                                submitButton.isEnabled = true
-                                submitButton.text = "XÁC NHẬN"
-                                pinInput.isEnabled = true
-                            }
-                        } catch (error: Exception) {
-                            Toast.makeText(this@SaleActivity, "Không thể xác thực PIN: ${error.message}", Toast.LENGTH_LONG).show()
-                            submitButton.isEnabled = true
-                            submitButton.text = "XÁC NHẬN"
-                            pinInput.isEnabled = true
-                        }
-                    }
-                }
-            }
-            pinDialog.show()
-        }
 
         refreshPaymentVisibility()
         val checkoutDialog = AlertDialog.Builder(this)
@@ -433,7 +371,7 @@ class SaleActivity : AppCompatActivity() {
                 ) PaymentMethod.TRANSFER else PaymentMethod.CASH
                 val enteredCashAmount = MoneyInput.parse(dialogBinding.cashReceivedInput.text)
                 val cashAmount = enteredCashAmount ?: payable
-                if (discountAuthorized && selectedDiscountType() == DiscountType.PERCENT &&
+                if (discountValue > 0 && selectedDiscountType() == DiscountType.PERCENT &&
                     (discountValue !in 0..DiscountCalculator.MAX_PERCENT)
                 ) {
                     Toast.makeText(this, "Phần trăm giảm phải từ 0 đến 100", Toast.LENGTH_SHORT).show()
@@ -447,8 +385,8 @@ class SaleActivity : AppCompatActivity() {
                 val type = if (dialogBinding.orderTypeGroup.checkedRadioButtonId == R.id.typeTakeAway) {
                     OrderType.TAKE_AWAY
                 } else OrderType.DINE_IN
-                val discountType = if (discountAuthorized) selectedDiscountType() else DiscountType.NONE
-                val finalDiscountInput = if (discountAuthorized) discountValue else 0
+                val discountType = if (discountValue > 0) selectedDiscountType() else DiscountType.NONE
+                val finalDiscountInput = if (discountValue > 0) discountValue else 0
                 val finalPayable = payable
                 if (paymentMethod == PaymentMethod.TRANSFER) {
                     AlertDialog.Builder(this)
@@ -473,6 +411,40 @@ class SaleActivity : AppCompatActivity() {
             }
         }
         checkoutDialog.show()
+    }
+
+    private fun showToppingDialog(line: CartLine) {
+        lifecycleScope.launch {
+            var availableToppings = repo.getToppingsForProduct(line.product.syncId)
+            if (availableToppings.isEmpty()) {
+                availableToppings = repo.getAllActiveToppings()
+            }
+            if (availableToppings.isEmpty()) {
+                Toast.makeText(this@SaleActivity, "Chưa có topping nào trên hệ thống", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            val selectedIds = line.selectedToppings.map { it.syncId }.toMutableSet()
+            val labels = availableToppings.map {
+                "${it.name} (+${TextFormat.vnd(it.price)})"
+            }.toTypedArray()
+            val checkedStates = availableToppings.map { selectedIds.contains(it.syncId) }.toBooleanArray()
+
+            AlertDialog.Builder(this@SaleActivity)
+                .setTitle("Thêm Topping: ${line.product.name}")
+                .setMultiChoiceItems(labels, checkedStates) { _, which, isChecked ->
+                    val item = availableToppings[which]
+                    if (isChecked) selectedIds.add(item.syncId)
+                    else selectedIds.remove(item.syncId)
+                }
+                .setPositiveButton("XÁC NHẬN") { _, _ ->
+                    val chosen = availableToppings.filter { selectedIds.contains(it.syncId) }
+                    OrderStore.updateToppings(line.lineId, chosen)
+                    refreshCart()
+                }
+                .setNegativeButton("HỦY", null)
+                .show()
+        }
     }
 
     private fun persistAndPrintOrder(
@@ -640,6 +612,7 @@ class SaleActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
                 syncConfig.save(url, token)
+                com.example.sunmipostester.sync.AutoPushScheduler.scheduleNext(this, forceReplace = true)
                 Toast.makeText(this, "Đã lưu cấu hình đồng bộ", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("HỦY", null)

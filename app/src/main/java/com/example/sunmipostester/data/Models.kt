@@ -13,10 +13,14 @@ enum class PaymentMethod(val label: String) {
  * [OrderItemEntity] with a price snapshot.
  */
 data class CartLine(
+    val lineId: String = java.util.UUID.randomUUID().toString(),
     val product: ProductEntity,
-    var quantity: Int
+    var quantity: Int,
+    val selectedToppings: MutableList<ToppingEntity> = mutableListOf()
 ) {
-    val lineTotal: Int get() = product.price * quantity
+    val unitPriceWithToppings: Int get() = product.price + selectedToppings.sumOf { it.price }
+    val lineTotal: Int get() = unitPriceWithToppings * quantity
+    val toppingsDisplay: String get() = selectedToppings.joinToString(", ") { it.name }
 }
 
 /**

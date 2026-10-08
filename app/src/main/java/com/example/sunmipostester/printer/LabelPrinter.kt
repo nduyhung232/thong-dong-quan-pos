@@ -1,11 +1,13 @@
 package com.example.sunmipostester.printer
 
-import com.example.sunmipostester.data.OrderWithItems
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
+import com.example.sunmipostester.data.OrderType
+import com.example.sunmipostester.data.OrderWithItems
+import com.example.sunmipostester.data.TextFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -25,7 +27,12 @@ class LabelPrinter(private val connectionFactory: () -> PrinterConnection) {
                 connection.write("DIRECTION 1,0\r\n".toByteArray(StandardCharsets.US_ASCII))
                 for (item in data.items) {
                     if (item.quantity <= 0) continue
-                    val labelBytes = buildLabel(item.productName, data.order.id)
+                    val labelBytes = buildLabel(
+                        productName = item.productName,
+                        unitPrice = item.unitPrice,
+                        orderId = data.order.id,
+                        orderType = data.order.orderType
+                    )
                     repeat(item.quantity) {
                         connection.write(labelBytes)
                         Thread.sleep(80)
@@ -40,12 +47,25 @@ class LabelPrinter(private val connectionFactory: () -> PrinterConnection) {
         }
 
     /** TSPL BITMAP bytes are sent with white pixels set and black glyph pixels clear. */
-    private fun buildLabel(productName: String, orderId: Long): ByteArray {
+    private fun buildLabel(
+        productName: String,
+        unitPrice: Int,
+        orderId: Long,
+        orderType: OrderType
+    ): ByteArray {
         val width = LABEL_WIDTH_DOTS
         val textWidth = width - HORIZONTAL_PADDING * 2
         val rows = mutableListOf<LabelText>()
+
+        // 1. Tên món (tự động xuống dòng theo bề rộng con tem để không mất chữ)
         rows += wrap(productName, textWidth, NAME_PAINT).map { LabelText(it, NAME_PAINT) }
-        rows += LabelText("Đơn #$orderId - Mang về", DETAIL_PAINT)
+
+        // 2. Giá tiền sản phẩm
+        rows += LabelText("Giá: ${TextFormat.vnd(unitPrice)}", PRICE_PAINT)
+
+        // 3. Thông tin đơn hàng
+        val typeLabel = if (orderType == OrderType.TAKE_AWAY) "Mang về" else "Tại chỗ"
+        rows += LabelText("Đơn #$orderId - $typeLabel", DETAIL_PAINT)
 
         val height = rows.sumOf { row ->
             row.paint.fontMetrics.run { (descent - ascent).toInt() + ROW_GAP }
@@ -79,7 +99,7 @@ class LabelPrinter(private val connectionFactory: () -> PrinterConnection) {
             }
 
             val commands = ByteArrayOutputStream()
-            commands.write("CLS\r\nBITMAP 24,20,$bytesPerRow,$height,0,".toByteArray(StandardCharsets.US_ASCII))
+            commands.write("CLS\r\nBITMAP 16,16,$bytesPerRow,$height,0,".toByteArray(StandardCharsets.US_ASCII))
             commands.write(raster.toByteArray())
             commands.write("\r\nPRINT 1,1\r\n".toByteArray(StandardCharsets.US_ASCII))
             return commands.toByteArray()
@@ -90,36 +110,59 @@ class LabelPrinter(private val connectionFactory: () -> PrinterConnection) {
 
     private fun wrap(text: String, maxWidth: Int, paint: Paint): List<String> {
         val lines = mutableListOf<String>()
-        var current = StringBuilder()
-        for (word in text.replace('\n', ' ').split(Regex("\\s+")).filter(String::isNotBlank)) {
-            val candidate = if (current.isEmpty()) word else "$current $word"
-            if (current.isNotEmpty() && paint.measureText(candidate) > maxWidth) {
-                lines += current.toString()
-                current = StringBuilder(word)
-            } else {
-                if (current.isNotEmpty()) current.append(' ')
-                current.append(word)
+        val paragraphs = text.split('\n')
+        for (para in paragraphs) {
+            var current = StringBuilder()
+            val words = para.trim().split(Regex("\\s+")).filter(String::isNotBlank)
+            for (word in words) {
+                val candidate = if (current.isEmpty()) word else "$current $word"
+                if (current.isNotEmpty() && paint.measureText(candidate) > maxWidth) {
+                    lines += current.toString()
+                    current = StringBuilder()
+                    if (paint.measureText(word) > maxWidth) {
+                        for (ch in word) {
+                            val cCandidate = if (current.isEmpty()) ch.toString() else "$current$ch"
+                            if (paint.measureText(cCandidate) > maxWidth) {
+                                lines += current.toString()
+                                current = StringBuilder(ch.toString())
+                            } else {
+                                current.append(ch)
+                            }
+                        }
+                    } else {
+                        current.append(word)
+                    }
+                } else {
+                    if (current.isNotEmpty()) current.append(' ')
+                    current.append(word)
+                }
             }
+            if (current.isNotEmpty()) lines += current.toString()
         }
-        if (current.isNotEmpty()) lines += current.toString()
         return lines.ifEmpty { listOf("") }
     }
 
     private data class LabelText(val text: String, val paint: Paint)
 
     private companion object {
-        const val LABEL_WIDTH_DOTS = 528
-        const val HORIZONTAL_PADDING = 4
+        // Khổ tem trà sữa/cà phê chuẩn: 40mm x 30mm (320 dots ở 203 DPI, 40 bytes/hàng)
+        const val LABEL_WIDTH_DOTS = 320
+        const val HORIZONTAL_PADDING = 6
         const val VERTICAL_PADDING = 8
-        const val ROW_GAP = 8
+        const val ROW_GAP = 6
         val NAME_PAINT = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.BLACK
-            textSize = 34f
+            textSize = 28f
+            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+        }
+        val PRICE_PAINT = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            textSize = 25f
             typeface = Typeface.create("sans-serif", Typeface.BOLD)
         }
         val DETAIL_PAINT = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.BLACK
-            textSize = 26f
+            textSize = 24f
             typeface = Typeface.create("sans-serif", Typeface.NORMAL)
         }
     }

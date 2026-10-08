@@ -2,6 +2,7 @@ package com.example.sunmipostester.data
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -340,4 +341,33 @@ interface DiscountCodeDao {
     /** Used when the server assigns no codes to this device at all. */
     @Query("DELETE FROM discount_codes WHERE consumed = 0")
     suspend fun deleteAllUnconsumed()
+}
+
+@Dao
+interface ToppingDao {
+
+    @Query("SELECT * FROM toppings WHERE active = 1 ORDER BY name ASC")
+    suspend fun getAllActive(): List<ToppingEntity>
+
+    @Query("SELECT * FROM toppings WHERE syncId = :syncId LIMIT 1")
+    suspend fun getBySyncId(syncId: String): ToppingEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(topping: ToppingEntity): Long
+
+    @Query(
+        """
+        SELECT t.* FROM toppings t
+        INNER JOIN product_toppings pt ON t.syncId = pt.toppingSyncId
+        WHERE pt.productSyncId = :productSyncId AND t.active = 1
+        ORDER BY t.name ASC
+        """
+    )
+    suspend fun getToppingsForProduct(productSyncId: String): List<ToppingEntity>
+
+    @Query("DELETE FROM product_toppings WHERE productSyncId = :productSyncId")
+    suspend fun clearProductToppings(productSyncId: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertProductToppings(links: List<ProductToppingEntity>)
 }

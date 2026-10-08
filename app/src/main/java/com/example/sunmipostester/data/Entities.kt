@@ -252,3 +252,33 @@ data class DiscountCodeEntity(
     val consumedByOrderSyncId: String? = null,
     val consumedAtMs: Long? = null
 )
+
+/**
+ * A topping master item (e.g. Trân châu đen, Thạch phô mai).
+ * Server-owned: pulled from the web admin.
+ */
+@Entity(
+    tableName = "toppings",
+    indices = [Index(value = ["syncId"], unique = true)]
+)
+data class ToppingEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val syncId: String = UUID.randomUUID().toString(),
+    val name: String,
+    val price: Int,
+    val active: Boolean = true,
+    val updatedAtMs: Long = System.currentTimeMillis()
+)
+
+/**
+ * Mapping between a product and an allowed topping.
+ */
+@Entity(
+    tableName = "product_toppings",
+    primaryKeys = ["productSyncId", "toppingSyncId"],
+    indices = [Index("productSyncId"), Index("toppingSyncId")]
+)
+data class ProductToppingEntity(
+    val productSyncId: String,
+    val toppingSyncId: String
+)

@@ -64,7 +64,9 @@ class SyncSettingsActivity : SecuredActivity() {
             return false
         }
         config.save(url, token)
+        com.example.sunmipostester.sync.AutoPushScheduler.scheduleNext(this, forceReplace = true)
         setStatus(getString(R.string.sync_saved))
+        refreshLastSync()
         return true
     }
 
@@ -116,6 +118,8 @@ class SyncSettingsActivity : SecuredActivity() {
         } else {
             getString(R.string.sync_last, timeFmt.format(Date(last)))
         }
+        val nextTime = com.example.sunmipostester.sync.AutoPushScheduler.getNextScheduledTimeFormatted(this)
+        binding.tvNextPushTime.text = "Lần tự động PUSH tiếp theo: $nextTime"
     }
 
     private fun setBusy(busy: Boolean) {

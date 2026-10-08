@@ -20,11 +20,38 @@ object OrderStore {
 
     fun isEmpty(): Boolean = lines.isEmpty()
 
-    /** Add one unit, merging into an existing line for the same product. */
+    /** Add one unit, merging into an existing line for the same product without toppings. */
     fun add(product: ProductEntity) {
-        val existing = lines.firstOrNull { it.product.id == product.id }
+        val existing = lines.firstOrNull { it.product.id == product.id && it.selectedToppings.isEmpty() }
         if (existing != null) existing.quantity++
-        else lines.add(CartLine(product, 1))
+        else lines.add(CartLine(product = product, quantity = 1))
+    }
+
+    /** Increase one unit by lineId. */
+    fun increaseLine(lineId: String) {
+        val line = lines.firstOrNull { it.lineId == lineId } ?: return
+        line.quantity++
+    }
+
+    /** Decrease one unit by lineId; removes the line when it reaches zero. */
+    fun decreaseLine(lineId: String) {
+        val idx = lines.indexOfFirst { it.lineId == lineId }
+        if (idx < 0) return
+        val line = lines[idx]
+        if (line.quantity <= 1) lines.removeAt(idx)
+        else line.quantity--
+    }
+
+    /** Remove a line entirely by lineId. */
+    fun removeLine(lineId: String) {
+        lines.removeAll { it.lineId == lineId }
+    }
+
+    /** Update toppings for a specific line. */
+    fun updateToppings(lineId: String, toppings: List<ToppingEntity>) {
+        val line = lines.firstOrNull { it.lineId == lineId } ?: return
+        line.selectedToppings.clear()
+        line.selectedToppings.addAll(toppings)
     }
 
     /** Decrease one unit; removes the line when it reaches zero. */
@@ -49,6 +76,10 @@ object OrderStore {
     /** Replace the current cart with a persisted table draft. */
     fun replaceWith(linesToLoad: List<CartLine>) {
         lines.clear()
-        lines.addAll(linesToLoad.map { CartLine(it.product, it.quantity) })
+        lines.addAll(linesToLoad.map {
+            val copy = CartLine(lineId = it.lineId, product = it.product, quantity = it.quantity)
+            copy.selectedToppings.addAll(it.selectedToppings)
+            copy
+        })
     }
 }

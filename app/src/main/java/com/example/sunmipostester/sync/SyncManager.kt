@@ -93,14 +93,37 @@ class SyncManager(
         val products = res.getJSONArray("products")
         for (i in 0 until products.length()) {
             val p = products.getJSONObject(i)
+            val pSyncId = p.getString("syncId")
             repo.upsertServerProduct(
-                syncId = p.getString("syncId"),
+                syncId = pSyncId,
                 name = p.getString("name"),
                 price = p.getInt("price"),
                 category = p.getString("category"),
                 active = p.getBoolean("active"),
                 updatedAtMs = p.optLong("updatedAtMs", System.currentTimeMillis())
             )
+            val toppingSyncIds = mutableListOf<String>()
+            val tArr = p.optJSONArray("toppingSyncIds")
+            if (tArr != null) {
+                for (j in 0 until tArr.length()) {
+                    toppingSyncIds.add(tArr.getString(j))
+                }
+            }
+            repo.setProductToppings(pSyncId, toppingSyncIds)
+        }
+
+        val toppings = res.optJSONArray("toppings")
+        if (toppings != null) {
+            for (i in 0 until toppings.length()) {
+                val t = toppings.getJSONObject(i)
+                repo.upsertServerTopping(
+                    syncId = t.getString("syncId"),
+                    name = t.getString("name"),
+                    price = t.getInt("price"),
+                    active = t.getBoolean("active"),
+                    updatedAtMs = t.optLong("updatedAtMs", System.currentTimeMillis())
+                )
+            }
         }
 
         val staff = res.getJSONArray("staff")
