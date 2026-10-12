@@ -15,6 +15,10 @@ import com.example.sunmipostester.data.MoneyInput
 import com.example.sunmipostester.databinding.ActivityShiftBinding
 import com.example.sunmipostester.databinding.DialogCashAmountBinding
 import com.example.sunmipostester.manage.ShiftAdapter
+import com.example.sunmipostester.sync.AutoPushScheduler
+import com.example.sunmipostester.sync.SyncConfig
+import com.example.sunmipostester.sync.SyncManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -144,7 +148,24 @@ class ShiftActivity : SecuredActivity() {
             val closedBy = Session.current?.id
             lifecycleScope.launch {
                 val closed = repo.closeShift(counted, closedBy, breakdown)
-                if (closed != null) showCloseResult(closed)
+                if (closed != null) {
+                    // Tự động PUSH dữ liệu lên Server ngay lập tức khi đóng ca
+                    AutoPushScheduler.triggerImmediatePush(this@ShiftActivity)
+                    val syncConfig = SyncConfig(this@ShiftActivity)
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        try {
+                            if (syncConfig.isConfigured) {
+                                val syncMgr = SyncManager(repo, syncConfig)
+                                val res = syncMgr.pushOnly()
+                                android.util.Log.i("ShiftActivity", "Đóng ca: Tự động PUSH thành công ${res.orders} đơn, ${res.shifts} ca")
+                            }
+                        } catch (e: Exception) {
+                            android.util.Log.w("ShiftActivity", "Đóng ca: PUSH trực tiếp chưa thành công (${e.message}), WorkManager sẽ tiếp tục chạy ngầm.")
+                        }
+                    }
+
+                    showCloseResult(closed)
+                }
                 loadData()
             }
         }

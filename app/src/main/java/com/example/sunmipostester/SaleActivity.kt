@@ -28,6 +28,7 @@ import com.example.sunmipostester.printer.PrinterMappingDialog
 import com.example.sunmipostester.sale.CartAdapter
 import com.example.sunmipostester.sale.CategoryAdapter
 import com.example.sunmipostester.sale.ProductAdapter
+import com.example.sunmipostester.sync.AutoPushScheduler
 import com.example.sunmipostester.sync.SyncConfig
 import com.example.sunmipostester.sync.SyncManager
 import kotlinx.coroutines.Dispatchers
@@ -242,6 +243,20 @@ class SaleActivity : AppCompatActivity() {
                             val closed = repo.closeShift(countedCash, Session.current?.id, breakdown)
                             Session.signOut()
                             if (closed != null) {
+                                // Tự động PUSH dữ liệu lên Server ngay lập tức khi đóng ca
+                                AutoPushScheduler.triggerImmediatePush(this@SaleActivity)
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    try {
+                                        if (syncConfig.isConfigured) {
+                                            val syncMgr = SyncManager(repo, syncConfig)
+                                            val res = syncMgr.pushOnly()
+                                            android.util.Log.i("SaleActivity", "Đóng ca: Tự động PUSH thành công ${res.orders} đơn, ${res.shifts} ca")
+                                        }
+                                    } catch (e: Exception) {
+                                        android.util.Log.w("SaleActivity", "Đóng ca: PUSH trực tiếp chưa thành công (${e.message}), WorkManager sẽ tiếp tục chạy ngầm.")
+                                    }
+                                }
+
                                 val diff = closed.difference ?: 0
                                 val diffMsg = when {
                                     diff > 0 -> "(Thừa: +${TextFormat.vnd(diff)})"
