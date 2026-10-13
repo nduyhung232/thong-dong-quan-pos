@@ -73,6 +73,12 @@ class SaleActivity : AppCompatActivity() {
         checkActiveShiftAndRefresh()
     }
 
+    override fun onNewIntent(intent: android.content.Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        refreshCart()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         printerProvider.unregister()
@@ -640,12 +646,21 @@ class SaleActivity : AppCompatActivity() {
     private fun showSyncMenu() {
         AlertDialog.Builder(this)
             .setTitle("CẤU HÌNH")
-            .setItems(arrayOf("Cấu hình máy in hóa đơn / máy in tem", "Cấu hình máy chủ", "PULL dữ liệu", "PUSH đơn/ca")) { _, which ->
+            .setItems(
+                arrayOf(
+                    "Cấu hình máy in hóa đơn / máy in tem",
+                    "Cấu hình máy chủ",
+                    "PULL dữ liệu",
+                    "PUSH đơn/ca",
+                    "💾 Thông tin bộ nhớ & lưu trữ"
+                )
+            ) { _, which ->
                 when (which) {
                     0 -> PrinterMappingDialog.show(this, printerProvider)
                     1 -> showSyncConfigDialog()
                     2 -> performPullSync()
                     3 -> performPushSync()
+                    4 -> com.example.sunmipostester.common.StorageInfoDialog.show(this, repo, lifecycleScope)
                 }
             }
             .setNegativeButton("ĐÓNG", null)

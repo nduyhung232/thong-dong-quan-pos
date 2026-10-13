@@ -31,6 +31,8 @@ class PosRepository(context: Context) {
 
     suspend fun allProducts(): List<ProductEntity> = io { productDao.allProducts() }
 
+    suspend fun productById(id: Long): ProductEntity? = io { productDao.byId(id) }
+
     suspend fun activeCategories(): List<String> = io { productDao.activeCategories() }
 
     suspend fun addProduct(name: String, price: Int, category: String): Long = io {
@@ -615,6 +617,10 @@ class PosRepository(context: Context) {
                 StaffExport(id = it.id, name = it.name, role = it.role, active = it.active)
             }
         )
+    }
+
+    suspend fun recordCounts(): Triple<Int, Int, Int> = io {
+        Triple(orderDao.count(), productDao.count(), shiftDao.count())
     }
 
     private suspend fun <T> io(block: suspend () -> T): T =

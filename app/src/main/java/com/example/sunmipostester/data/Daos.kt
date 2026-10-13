@@ -44,6 +44,9 @@ interface ProductDao {
 
     @Query("UPDATE products SET active = 1 WHERE id = :id")
     suspend fun reactivate(id: Long)
+
+    @Query("SELECT * FROM products WHERE id = :id")
+    suspend fun byId(id: Long): ProductEntity?
 }
 
 @Dao
@@ -123,6 +126,9 @@ interface OrderDao {
         """
     )
     suspend fun paidCountBetween(fromMs: Long, toMs: Long): Int
+
+    @Query("SELECT COUNT(*) FROM orders")
+    suspend fun count(): Int
 }
 
 @Dao
@@ -194,6 +200,9 @@ interface ShiftDao {
 
     @Query("SELECT * FROM shifts WHERE id = :shiftId")
     suspend fun shiftById(shiftId: Long): ShiftEntity?
+
+    @Query("SELECT COUNT(*) FROM shifts")
+    suspend fun count(): Int
 
     /** Cash collected (order totals, not tendered amounts) for PAID cash orders. */
     @Query(

@@ -22,9 +22,16 @@ import com.example.sunmipostester.printer.ReceiptPreviewDialog
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.content.Intent
+import android.graphics.Color
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
+import com.example.sunmipostester.data.CartLine
+import com.example.sunmipostester.data.ProductEntity
+import com.example.sunmipostester.data.OrderStore
+import com.example.sunmipostester.databinding.DialogOrderDetailBinding
 
 /**
  * Order history: today's revenue summary, the list of recent orders, and per-order
@@ -164,23 +171,106 @@ class OrderManagementActivity : SecuredActivity() {
     private fun showOrderDetail(order: OrderEntity) {
         lifecycleScope.launch {
             val data = repo.orderWithItems(order.id) ?: return@launch
-            val builder = AlertDialog.Builder(this@OrderManagementActivity)
-                .setTitle("${getString(R.string.ord_detail_title)} #${order.id}")
-                .setMessage(buildDetailText(data))
-                .setPositiveButton(R.string.ord_reprint) { _, _ ->
-                    ReceiptPreviewDialog.show(
-                        context = this@OrderManagementActivity,
-                        data = data,
-                        isReprint = true,
-                        onPrintConfirmed = { reprint(data) }
-                    )
-                }
-                .setNeutralButton(R.string.ord_close, null)
+            val dialogBinding = DialogOrderDetailBinding.inflate(layoutInflater)
+            val dialog = AlertDialog.Builder(this@OrderManagementActivity)
+                .setView(dialogBinding.root)
+                .create()
 
-            if (order.status == OrderStatus.PAID && Session.can(Permission.CANCEL_ORDER)) {
-                builder.setNegativeButton(R.string.ord_cancel_order) { _, _ -> confirmCancel(order) }
+            val o = data.order
+            dialogBinding.tvOrderTitle.text = "${getString(R.string.ord_detail_title)} #${o.id}"
+            val dateStr = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(o.createdAtMs))
+            val staffStr = o.staffName?.let { " · Thu ngân: $it" } ?: ""
+            dialogBinding.tvOrderSubtitle.text = "$dateStr$staffStr"
+
+            if (o.status == OrderStatus.PAID) {
+                dialogBinding.tvOrderStatusBadge.text = getString(R.string.ord_status_paid)
+                dialogBinding.tvOrderStatusBadge.setBackgroundColor(Color.parseColor("#D1FAE5"))
+                dialogBinding.tvOrderStatusBadge.setTextColor(Color.parseColor("#065F46"))
+            } else {
+                dialogBinding.tvOrderStatusBadge.text = getString(R.string.ord_status_cancelled)
+                dialogBinding.tvOrderStatusBadge.setBackgroundColor(Color.parseColor("#FEE2E2"))
+                dialogBinding.tvOrderStatusBadge.setTextColor(Color.parseColor("#991B1B"))
             }
-            builder.show()
+
+            val itemsSb = StringBuilder()
+            data.items.forEachIndexed { idx, item ->
+                itemsSb.append("${idx + 1}. ${item.productName}\n")
+                itemsSb.append("   ${item.quantity} x ${TextFormat.vnd(item.unitPrice)} = ${TextFormat.vnd(item.lineTotal)}\n")
+            }
+            dialogBinding.tvOrderItems.text = itemsSb.toString().trimEnd()
+
+            dialogBinding.tvOrderTotal.text = TextFormat.vnd(o.total)
+            val paySb = StringBuilder()
+            paySb.append("Hình thức: ${o.paymentMethod.label}")
+            if (o.paymentMethod == PaymentMethod.CASH) {
+                paySb.append(" | Khách đưa: ${TextFormat.vnd(o.cashReceived)}")
+                paySb.append(" | Tiền thừa: ${TextFormat.vnd(o.changeAmount)}")
+            }
+            dialogBinding.tvPaymentDetails.text = paySb.toString()
+
+            // 1. SAO CHÉP ĐƠN HÀNG VÀO GIỎ
+            dialogBinding.btnCopyOrder.setOnClickListener {
+                dialog.dismiss()
+                copyOrderToActiveCart(data)
+            }
+
+            // 2. IN LẠI HÓA ĐƠN
+            dialogBinding.btnReprintOrder.setOnClickListener {
+                ReceiptPreviewDialog.show(
+                    context = this@OrderManagementActivity,
+                    data = data,
+                    isReprint = true,
+                    onPrintConfirmed = { reprint(data) }
+                )
+            }
+
+            // 3. HỦY ĐƠN HÀNG
+            if (o.status == OrderStatus.PAID && Session.can(Permission.CANCEL_ORDER)) {
+                dialogBinding.btnCancelOrder.visibility = View.VISIBLE
+                dialogBinding.btnCancelOrder.setOnClickListener {
+                    dialog.dismiss()
+                    confirmCancel(o)
+                }
+            } else {
+                dialogBinding.btnCancelOrder.visibility = View.GONE
+            }
+
+            // 4. ĐÓNG DIALOG
+            dialogBinding.btnCloseDialog.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+    }
+
+    private fun copyOrderToActiveCart(data: OrderWithItems) {
+        lifecycleScope.launch {
+            val allLiveProducts = repo.allProducts().associateBy { it.id }
+            val linesToCopy = data.items.map { item ->
+                val live = allLiveProducts[item.productId]
+                val prod = live?.copy(price = item.unitPrice) ?: ProductEntity(
+                    id = item.productId,
+                    syncId = item.productSyncId ?: UUID.randomUUID().toString(),
+                    name = item.productName,
+                    price = item.unitPrice,
+                    category = "Món sao chép"
+                )
+                CartLine(
+                    product = prod,
+                    quantity = item.quantity
+                )
+            }
+
+            OrderStore.replaceWith(linesToCopy)
+            val totalQty = linesToCopy.sumOf { it.quantity }
+            toast("Đã sao chép ${linesToCopy.size} món ($totalQty phần) vào màn hình order")
+
+            val intent = Intent(this@OrderManagementActivity, SaleActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            startActivity(intent)
+            finish()
         }
     }
 

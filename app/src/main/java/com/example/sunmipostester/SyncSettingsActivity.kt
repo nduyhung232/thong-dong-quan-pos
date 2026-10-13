@@ -1,15 +1,21 @@
 package com.example.sunmipostester
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.sunmipostester.auth.Permission
 import com.example.sunmipostester.auth.SecuredActivity
+import com.example.sunmipostester.common.StorageHelper
+import com.example.sunmipostester.common.StorageReport
 import com.example.sunmipostester.data.PosRepository
 import com.example.sunmipostester.databinding.ActivitySyncSettingsBinding
 import com.example.sunmipostester.sync.SyncConfig
 import com.example.sunmipostester.sync.SyncManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -28,6 +34,7 @@ class SyncSettingsActivity : SecuredActivity() {
     private lateinit var binding: ActivitySyncSettingsBinding
     private lateinit var config: SyncConfig
     private lateinit var manager: SyncManager
+    private lateinit var repo: PosRepository
 
     private val timeFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
@@ -39,8 +46,9 @@ class SyncSettingsActivity : SecuredActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.sync_title)
 
+        repo = PosRepository(this)
         config = SyncConfig(this)
-        manager = SyncManager(PosRepository(this), config)
+        manager = SyncManager(repo, config)
 
         binding.inputUrl.setText(config.baseUrl)
         binding.inputToken.setText(config.token)
@@ -49,6 +57,22 @@ class SyncSettingsActivity : SecuredActivity() {
         binding.btnSave.setOnClickListener { saveConfig() }
         binding.btnTest.setOnClickListener { testConnection() }
         binding.btnSync.setOnClickListener { runSync() }
+
+        binding.btnStorageBackup.setOnClickListener {
+            startActivity(Intent(this, BackupActivity::class.java))
+        }
+
+        binding.btnStorageClearCache.setOnClickListener {
+            val freed = StorageHelper.clearAppCache(this)
+            val freedStr = StorageHelper.format(this, freed)
+            toast("Đã dọn dẹp $freedStr bộ nhớ đệm")
+            refreshStorageInfo()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshStorageInfo()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -133,4 +157,51 @@ class SyncSettingsActivity : SecuredActivity() {
     }
 
     private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    private fun refreshStorageInfo() {
+        lifecycleScope.launch {
+            val report = withContext(Dispatchers.IO) {
+                StorageHelper.getReport(this@SyncSettingsActivity, repo)
+            }
+            bindStorageReport(report)
+        }
+    }
+
+    private fun bindStorageReport(report: StorageReport) {
+        when (report.statusLevel) {
+            StorageReport.StatusLevel.SAFE -> {
+                binding.tvStorageStatusBadge.text = "🟢 AN TOÀN"
+                binding.tvStorageStatusBadge.setBackgroundColor(Color.parseColor("#D1FAE5"))
+                binding.tvStorageStatusBadge.setTextColor(Color.parseColor("#065F46"))
+            }
+            StorageReport.StatusLevel.WARNING -> {
+                binding.tvStorageStatusBadge.text = "🟡 CẢNH BÁO"
+                binding.tvStorageStatusBadge.setBackgroundColor(Color.parseColor("#FEF3C7"))
+                binding.tvStorageStatusBadge.setTextColor(Color.parseColor("#92400E"))
+            }
+            StorageReport.StatusLevel.DANGER -> {
+                binding.tvStorageStatusBadge.text = "🔴 NGUY CẤP: GẦN ĐẦY"
+                binding.tvStorageStatusBadge.setBackgroundColor(Color.parseColor("#FEE2E2"))
+                binding.tvStorageStatusBadge.setTextColor(Color.parseColor("#991B1B"))
+            }
+        }
+        binding.tvStorageRecommendation.text = report.statusRecommendation
+
+        binding.pbStorageProgress.progress = report.systemUsedPercent
+        val usedStr = StorageHelper.format(this, report.systemUsedBytes)
+        val totalStr = StorageHelper.format(this, report.systemTotalBytes)
+        val availStr = StorageHelper.format(this, report.systemAvailableBytes)
+        binding.tvSystemStorageStats.text =
+            "Đã dùng: $usedStr / $totalStr (${report.systemUsedPercent}%) · Trống: $availStr"
+
+        val dbStr = StorageHelper.format(this, report.dbSizeBytes)
+        val cacheStr = StorageHelper.format(this, report.cacheSizeBytes)
+        val appTotalStr = StorageHelper.format(this, report.totalAppBytes)
+
+        binding.tvAppDatabaseSize.text = "• Dữ liệu cơ sở dữ liệu (pos.db): $dbStr"
+        binding.tvAppCacheSize.text = "• Bộ nhớ đệm tạm (Cache): $cacheStr"
+        binding.tvAppTotalSize.text = "• Tổng dữ liệu ứng dụng POS: $appTotalStr"
+        binding.tvRecordStats.text =
+            "Thống kê: ${report.orderCount} đơn hàng · ${report.productCount} món · ${report.shiftCount} ca làm việc"
+    }
 }

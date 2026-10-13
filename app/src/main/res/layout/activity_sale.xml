@@ -101,18 +101,15 @@
             android:orientation="vertical"
             android:padding="12dp">
 
-            <HorizontalScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categoryList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/categoryList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            </HorizontalScrollView>
+                android:orientation="horizontal"
+                android:clipToPadding="false"
+                android:paddingEnd="16dp"
+                android:scrollbars="none"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/productGrid"
