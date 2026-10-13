@@ -1,6 +1,8 @@
 package com.example.sunmipostester.sync
 
 import com.example.sunmipostester.common.DiscountType
+import com.example.sunmipostester.common.StorageHelper
+import com.example.sunmipostester.common.StorageReport
 import com.example.sunmipostester.data.OrderEntity
 import com.example.sunmipostester.data.OrderItemEntity
 import com.example.sunmipostester.data.OrderWithItems
@@ -172,7 +174,13 @@ class SyncManager(
     private suspend fun push(api: SyncApi): PushCounts {
         val orders = repo.unsyncedOrdersWithItems()
         val shifts = repo.unsyncedShifts()
-        if (orders.isEmpty() && shifts.isEmpty()) {
+        val storageReport = try {
+            StorageHelper.getReport(config.context, repo)
+        } catch (_: Exception) {
+            null
+        }
+
+        if (orders.isEmpty() && shifts.isEmpty() && storageReport == null) {
             return PushCounts(0, 0, emptyList())
         }
 
@@ -180,6 +188,9 @@ class SyncManager(
             put("clientTimeMs", System.currentTimeMillis())
             put("orders", JSONArray().apply { orders.forEach { put(orderJson(it)) } })
             put("shifts", JSONArray().apply { shifts.forEach { put(shiftJson(it)) } })
+            if (storageReport != null) {
+                put("storage", storageJson(storageReport))
+            }
         }
 
         val res = api.postJson(PATH_PUSH, body)
@@ -252,6 +263,21 @@ class SyncManager(
         putNullable("staffSyncId", s.staffSyncId)
         putNullable("staffName", s.staffName)
         putNullable("closedByStaffSyncId", s.closedByStaffSyncId)
+    }
+
+    private fun storageJson(r: StorageReport): JSONObject = JSONObject().apply {
+        put("dbSizeBytes", r.dbSizeBytes)
+        put("cacheSizeBytes", r.cacheSizeBytes)
+        put("totalAppBytes", r.totalAppBytes)
+        put("systemTotalBytes", r.systemTotalBytes)
+        put("systemAvailableBytes", r.systemAvailableBytes)
+        put("systemUsedBytes", r.systemUsedBytes)
+        put("systemUsedPercent", r.systemUsedPercent)
+        put("orderCount", r.orderCount)
+        put("productCount", r.productCount)
+        put("shiftCount", r.shiftCount)
+        put("statusLevel", r.statusLevel.name)
+        put("updatedAtMs", System.currentTimeMillis())
     }
 
     /** Put an explicit JSON null when the value is null (server zod expects null, not missing). */

@@ -13,7 +13,7 @@ import android.content.Context
  * "moderate security" posture. Anyone with root/ADB access to the device could
  * read it. For a stronger posture, switch to androidx.security EncryptedSharedPreferences.
  */
-class SyncConfig(context: Context) {
+class SyncConfig(val context: Context) {
 
     private val prefs = context.applicationContext
         .getSharedPreferences("pos_sync_prefs", Context.MODE_PRIVATE)
