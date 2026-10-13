@@ -93,6 +93,18 @@ abstract class PosDatabase : RoomDatabase() {
                 "pos.db"
             )
                 .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                .addCallback(object : RoomDatabase.Callback() {
+                    override fun onOpen(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                        super.onOpen(db)
+                        // Clear test orders and shifts created before official launch (05/10/2026 00:00:00 GMT+7)
+                        val cutoffMs = 1791133200000L
+                        try {
+                            db.execSQL("DELETE FROM order_items WHERE orderId IN (SELECT id FROM orders WHERE createdAtMs < $cutoffMs)")
+                            db.execSQL("DELETE FROM orders WHERE createdAtMs < $cutoffMs")
+                            db.execSQL("DELETE FROM shifts WHERE openedAtMs < $cutoffMs AND id IN (1, 2)")
+                        } catch (_: Exception) {}
+                    }
+                })
                 // Unsupported upgrade paths remain destructive; add explicit
                 // migrations before deploying any further schema changes.
                 .fallbackToDestructiveMigration()
