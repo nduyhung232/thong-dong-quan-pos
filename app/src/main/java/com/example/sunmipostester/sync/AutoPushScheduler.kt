@@ -15,12 +15,12 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Lịch tự động đẩy dữ liệu (Orders, Shifts) từ POS lên Server.
- * Các khung giờ cố định trong ngày: 10:00, 15:00, 18:00, 21:00, 22:00 (giờ Việt Nam, UTC+07:00).
+ * Các khung giờ cố định trong ngày: 09:00, 10:00, 15:00, 17:00, 18:00, 21:00, 22:00 (giờ Việt Nam, UTC+07:00).
  */
 object AutoPushScheduler {
     private const val TAG = "AutoPushScheduler"
     const val UNIQUE_WORK_NAME = "AutoPushSyncWork"
-    val TARGET_HOURS = listOf(10, 15, 18, 21, 22)
+    val TARGET_HOURS = listOf(9, 10, 15, 17, 18, 21, 22)
     private val TIME_ZONE = TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
 
     /**
@@ -60,7 +60,7 @@ object AutoPushScheduler {
             }
         }
 
-        // Nếu đã qua mốc cuối trong ngày (22:00), mốc tiếp theo là 10:00 ngày hôm sau
+        // Nếu đã qua mốc cuối trong ngày (22:00), mốc tiếp theo là 09:00 ngày hôm sau
         return Calendar.getInstance(TIME_ZONE).apply {
             timeInMillis = now.timeInMillis
             add(Calendar.DAY_OF_YEAR, 1)
