@@ -126,7 +126,7 @@
         android:textSize="14sp"
         android:textStyle="bold" />
 
-    <!-- 2. REPRINT & CANCEL BUTTONS -->
+    <!-- 2. REPRINT INVOICE & REPRINT LABEL BUTTONS -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,26 +139,37 @@
             android:layout_width="0dp"
             android:layout_height="46dp"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:text="🖨 IN LẠI"
+            android:layout_marginEnd="5dp"
+            android:text="🧾 IN HÓA ĐƠN"
             android:textSize="13sp"
             android:textStyle="bold" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancelOrder"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:id="@+id/btnReprintLabel"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
             android:layout_height="46dp"
             android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:text="❌ HỦY ĐƠN"
-            android:textColor="#DC2626"
-            app:strokeColor="#DC2626"
+            android:layout_marginStart="5dp"
+            android:text="🏷 IN LẠI TEM"
             android:textSize="13sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- 3. CLOSE BUTTON -->
+    <!-- 3. CANCEL ORDER (Visible only if eligible) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancelOrder"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="6dp"
+        android:text="❌ HỦY ĐƠN HÀNG"
+        android:textColor="#DC2626"
+        app:strokeColor="#DC2626"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <!-- 4. CLOSE BUTTON -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCloseDialog"
         style="@style/Widget.Material3.Button.TextButton"

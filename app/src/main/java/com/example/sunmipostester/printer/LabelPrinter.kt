@@ -19,26 +19,30 @@ class LabelPrinter(private val connectionFactory: () -> PrinterConnection) {
     data class ActionResult(val success: Boolean, val message: String)
 
     /** Prints one cup label per item count; labels omit the quantity field. */
-    suspend fun printTakeAwayLabels(data: OrderWithItems): ActionResult =
+    suspend fun printTakeAwayLabels(data: OrderWithItems, forceTakeAway: Boolean = false): ActionResult =
         withContext(Dispatchers.IO) {
             val connection = connectionFactory()
             try {
                 connection.open()
                 connection.write("DIRECTION 1,0\r\n".toByteArray(StandardCharsets.US_ASCII))
+                var printedCount = 0
                 for (item in data.items) {
                     if (item.quantity <= 0) continue
+                    val effectiveOrderType = if (forceTakeAway) OrderType.TAKE_AWAY else data.order.orderType
                     val labelBytes = buildLabel(
                         productName = item.productName,
                         unitPrice = item.unitPrice,
                         orderId = data.order.id,
-                        orderType = data.order.orderType
+                        orderType = effectiveOrderType
                     )
                     repeat(item.quantity) {
                         connection.write(labelBytes)
+                        printedCount++
                         Thread.sleep(80)
                     }
                 }
-                ActionResult(true, "Đã gửi tem mang về")
+                val typeDesc = if (forceTakeAway || data.order.orderType == OrderType.TAKE_AWAY) "Mang về" else "Tại chỗ"
+                ActionResult(true, "Đã gửi $printedCount tem ($typeDesc) tới máy in")
             } catch (e: Exception) {
                 ActionResult(false, "Lỗi in tem: ${e.message}")
             } finally {

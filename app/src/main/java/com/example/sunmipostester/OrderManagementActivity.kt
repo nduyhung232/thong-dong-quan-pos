@@ -224,7 +224,12 @@ class OrderManagementActivity : SecuredActivity() {
                 )
             }
 
-            // 3. HỦY ĐƠN HÀNG
+            // 3. IN LẠI TEM
+            dialogBinding.btnReprintLabel.setOnClickListener {
+                reprintLabels(data)
+            }
+
+            // 4. HỦY ĐƠN HÀNG
             if (o.status == OrderStatus.PAID && Session.can(Permission.CANCEL_ORDER)) {
                 dialogBinding.btnCancelOrder.visibility = View.VISIBLE
                 dialogBinding.btnCancelOrder.setOnClickListener {
@@ -308,6 +313,22 @@ class OrderManagementActivity : SecuredActivity() {
             onReady = { printer ->
                 lifecycleScope.launch {
                     toast(printer.printReceipt(data, isReprint = true).message)
+                }
+            }
+        )
+    }
+
+    private fun reprintLabels(data: OrderWithItems) {
+        if (data.items.isEmpty()) {
+            toast("Đơn hàng không có món ăn để in tem")
+            return
+        }
+        printers.withLabelPrinter(
+            onError = { err -> toast(errorMessage(err)) },
+            onReady = { labelPrinter ->
+                lifecycleScope.launch {
+                    val result = labelPrinter.printTakeAwayLabels(data, forceTakeAway = true)
+                    toast(result.message)
                 }
             }
         )
