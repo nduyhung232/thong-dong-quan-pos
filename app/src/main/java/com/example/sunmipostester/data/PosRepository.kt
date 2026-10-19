@@ -186,6 +186,40 @@ class PosRepository(context: Context) {
         orderDao.updateOrderType(orderId, orderType)
     }
 
+    /**
+     * Update order payment method (CASH vs TRANSFER) and recalculate the shift's
+     * expectedCash and cashDifference if the shift is closed, then clear syncedAtMs.
+     */
+    suspend fun updateOrderPaymentMethod(orderId: Long, newMethod: PaymentMethod): OrderWithItems? = io {
+        val ow = orderDao.orderWithItems(orderId) ?: return@io null
+        val o = ow.order
+        if (o.paymentMethod == newMethod) return@io ow
+
+        val cashReceived = if (newMethod == PaymentMethod.CASH) o.total else 0
+        val changeAmount = 0
+        orderDao.updatePaymentMethod(orderId, newMethod, cashReceived, changeAmount)
+
+        // If order is attached to a shift, recalculate the shift if it's already closed
+        val shiftId = o.shiftId
+        if (shiftId != null) {
+            val shift = shiftDao.shiftById(shiftId)
+            if (shift != null && shift.status == ShiftStatus.CLOSED) {
+                val newCashSales = shiftDao.cashSalesOfShift(shift.id)
+                val newExpectedCash = shift.openingCash + newCashSales - cashExpenseDao.totalForShift(shift.id)
+                val newCashDifference = (shift.countedCash ?: 0) - newExpectedCash
+                shiftDao.update(
+                    shift.copy(
+                        expectedCash = newExpectedCash,
+                        cashDifference = newCashDifference,
+                        syncedAtMs = null // marks shift to be re-pushed
+                    )
+                )
+            }
+        }
+
+        orderDao.orderWithItems(orderId)
+    }
+
     /** Paid revenue and order count within a time window (inclusive). */
     suspend fun revenueSummary(fromMs: Long, toMs: Long): Pair<Int, Int> = io {
         orderDao.revenueBetween(fromMs, toMs) to orderDao.paidCountBetween(fromMs, toMs)

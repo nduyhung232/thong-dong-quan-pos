@@ -211,20 +211,32 @@ class OrderManagementActivity : SecuredActivity() {
             dialogBinding.tvPaymentDetails.text = paySb.toString()
 
             var currentOrderType = o.orderType
+            var currentPaymentMethod = o.paymentMethod
+            var currentData = data
+
             if (currentOrderType == OrderType.TAKE_AWAY) {
                 dialogBinding.rbTakeAway.isChecked = true
             } else {
                 dialogBinding.rbDineIn.isChecked = true
             }
 
+            if (currentPaymentMethod == PaymentMethod.TRANSFER) {
+                dialogBinding.rbPayTransfer.isChecked = true
+            } else {
+                dialogBinding.rbPayCash.isChecked = true
+            }
+
             if (o.status == OrderStatus.CANCELLED) {
                 dialogBinding.rbDineIn.isEnabled = false
                 dialogBinding.rbTakeAway.isEnabled = false
+                dialogBinding.rbPayCash.isEnabled = false
+                dialogBinding.rbPayTransfer.isEnabled = false
             } else {
                 dialogBinding.rgOrderType.setOnCheckedChangeListener { _, checkedId ->
                     val newType = if (checkedId == R.id.rbTakeAway) OrderType.TAKE_AWAY else OrderType.DINE_IN
                     if (newType != currentOrderType) {
                         currentOrderType = newType
+                        currentData = currentData.copy(order = currentData.order.copy(orderType = newType))
                         lifecycleScope.launch {
                             repo.updateOrderType(o.id, newType)
                             AutoPushScheduler.triggerImmediatePush(this@OrderManagementActivity)
@@ -234,29 +246,53 @@ class OrderManagementActivity : SecuredActivity() {
                         }
                     }
                 }
+
+                dialogBinding.rgPaymentMethod.setOnCheckedChangeListener { _, checkedId ->
+                    val newMethod = if (checkedId == R.id.rbPayTransfer) PaymentMethod.TRANSFER else PaymentMethod.CASH
+                    if (newMethod != currentPaymentMethod) {
+                        currentPaymentMethod = newMethod
+                        lifecycleScope.launch {
+                            val updated = repo.updateOrderPaymentMethod(o.id, newMethod)
+                            if (updated != null) {
+                                currentData = updated.copy(order = updated.order.copy(orderType = currentOrderType))
+                            }
+                            AutoPushScheduler.triggerImmediatePush(this@OrderManagementActivity)
+                            val label = newMethod.label
+                            toast("Đã đổi sang: $label (Đã cập nhật tiền ca & đang đồng bộ...)")
+
+                            val updatedPaySb = StringBuilder()
+                            updatedPaySb.append("Hình thức: $label")
+                            if (newMethod == PaymentMethod.CASH) {
+                                updatedPaySb.append(" | Khách đưa: ${TextFormat.vnd(currentData.order.cashReceived)}")
+                                updatedPaySb.append(" | Tiền thừa: ${TextFormat.vnd(currentData.order.changeAmount)}")
+                            }
+                            dialogBinding.tvPaymentDetails.text = updatedPaySb.toString()
+
+                            resetHistory()
+                        }
+                    }
+                }
             }
 
             // 1. SAO CHÉP ĐƠN HÀNG VÀO GIỎ
             dialogBinding.btnCopyOrder.setOnClickListener {
                 dialog.dismiss()
-                copyOrderToActiveCart(data)
+                copyOrderToActiveCart(currentData)
             }
 
             // 2. IN LẠI HÓA ĐƠN
             dialogBinding.btnReprintOrder.setOnClickListener {
-                val updatedData = data.copy(order = data.order.copy(orderType = currentOrderType))
                 ReceiptPreviewDialog.show(
                     context = this@OrderManagementActivity,
-                    data = updatedData,
+                    data = currentData,
                     isReprint = true,
-                    onPrintConfirmed = { reprint(updatedData) }
+                    onPrintConfirmed = { reprint(currentData) }
                 )
             }
 
             // 3. IN LẠI TEM
             dialogBinding.btnReprintLabel.setOnClickListener {
-                val updatedData = data.copy(order = data.order.copy(orderType = currentOrderType))
-                reprintLabels(updatedData)
+                reprintLabels(currentData)
             }
 
             // 4. HỦY ĐƠN HÀNG

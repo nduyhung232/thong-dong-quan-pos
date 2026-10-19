@@ -114,6 +114,10 @@ interface OrderDao {
     @Query("UPDATE orders SET orderType = :orderType, syncedAtMs = NULL WHERE id = :orderId")
     suspend fun updateOrderType(orderId: Long, orderType: OrderType)
 
+    /** Update payment method (CASH vs TRANSFER) and reset syncedAtMs so it re-pushes to server. */
+    @Query("UPDATE orders SET paymentMethod = :paymentMethod, cashReceived = :cashReceived, changeAmount = :changeAmount, syncedAtMs = NULL WHERE id = :orderId")
+    suspend fun updatePaymentMethod(orderId: Long, paymentMethod: PaymentMethod, cashReceived: Int, changeAmount: Int)
+
     /** Revenue of PAID orders created within the given time window. */
     @Query(
         """

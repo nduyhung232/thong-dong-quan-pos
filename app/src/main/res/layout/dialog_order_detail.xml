@@ -113,7 +113,7 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- Hình thức phục vụ (Ăn tại chỗ / Mang về) -->
+    <!-- Tùy chỉnh: Hình thức phục vụ & Phương thức thanh toán -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -122,10 +122,11 @@
         android:orientation="vertical"
         android:padding="10dp">
 
+        <!-- 1. Hình thức phục vụ -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hình thức phục vụ (chọn để đổi):"
+            android:text="Hình thức phục vụ:"
             android:textColor="#1E3A8A"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -134,7 +135,7 @@
             android:id="@+id/rgOrderType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:orientation="horizontal">
 
             <RadioButton
@@ -152,6 +153,47 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="🛍 Mang về"
+                android:textColor="#1E293B"
+                android:textSize="14sp" />
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="6dp"
+            android:background="#DBEAFE" />
+
+        <!-- 2. Phương thức thanh toán -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phương thức thanh toán:"
+            android:textColor="#1E3A8A"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rgPaymentMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbPayCash"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="💵 Tiền mặt"
+                android:textColor="#1E293B"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbPayTransfer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="💳 Chuyển khoản"
                 android:textColor="#1E293B"
                 android:textSize="14sp" />
         </RadioGroup>
