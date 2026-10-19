@@ -13,8 +13,10 @@ import com.example.sunmipostester.data.OrderEntity
 import com.example.sunmipostester.data.OrderStatus
 import com.example.sunmipostester.data.OrderWithItems
 import com.example.sunmipostester.data.PaymentMethod
+import com.example.sunmipostester.data.OrderType
 import com.example.sunmipostester.data.PosRepository
 import com.example.sunmipostester.data.TextFormat
+import com.example.sunmipostester.sync.AutoPushScheduler
 import com.example.sunmipostester.databinding.ActivityOrderManagementBinding
 import com.example.sunmipostester.manage.OrderAdapter
 import com.example.sunmipostester.printer.PrinterProvider
@@ -208,6 +210,32 @@ class OrderManagementActivity : SecuredActivity() {
             }
             dialogBinding.tvPaymentDetails.text = paySb.toString()
 
+            var currentOrderType = o.orderType
+            if (currentOrderType == OrderType.TAKE_AWAY) {
+                dialogBinding.rbTakeAway.isChecked = true
+            } else {
+                dialogBinding.rbDineIn.isChecked = true
+            }
+
+            if (o.status == OrderStatus.CANCELLED) {
+                dialogBinding.rbDineIn.isEnabled = false
+                dialogBinding.rbTakeAway.isEnabled = false
+            } else {
+                dialogBinding.rgOrderType.setOnCheckedChangeListener { _, checkedId ->
+                    val newType = if (checkedId == R.id.rbTakeAway) OrderType.TAKE_AWAY else OrderType.DINE_IN
+                    if (newType != currentOrderType) {
+                        currentOrderType = newType
+                        lifecycleScope.launch {
+                            repo.updateOrderType(o.id, newType)
+                            AutoPushScheduler.triggerImmediatePush(this@OrderManagementActivity)
+                            val label = if (newType == OrderType.TAKE_AWAY) "Mang về" else "Ăn tại chỗ"
+                            toast("Đã đổi hình thức thành: $label (Đang đồng bộ lên Web...)")
+                            resetHistory()
+                        }
+                    }
+                }
+            }
+
             // 1. SAO CHÉP ĐƠN HÀNG VÀO GIỎ
             dialogBinding.btnCopyOrder.setOnClickListener {
                 dialog.dismiss()
@@ -216,17 +244,19 @@ class OrderManagementActivity : SecuredActivity() {
 
             // 2. IN LẠI HÓA ĐƠN
             dialogBinding.btnReprintOrder.setOnClickListener {
+                val updatedData = data.copy(order = data.order.copy(orderType = currentOrderType))
                 ReceiptPreviewDialog.show(
                     context = this@OrderManagementActivity,
-                    data = data,
+                    data = updatedData,
                     isReprint = true,
-                    onPrintConfirmed = { reprint(data) }
+                    onPrintConfirmed = { reprint(updatedData) }
                 )
             }
 
             // 3. IN LẠI TEM
             dialogBinding.btnReprintLabel.setOnClickListener {
-                reprintLabels(data)
+                val updatedData = data.copy(order = data.order.copy(orderType = currentOrderType))
+                reprintLabels(updatedData)
             }
 
             // 4. HỦY ĐƠN HÀNG
@@ -327,7 +357,7 @@ class OrderManagementActivity : SecuredActivity() {
             onError = { err -> toast(errorMessage(err)) },
             onReady = { labelPrinter ->
                 lifecycleScope.launch {
-                    val result = labelPrinter.printTakeAwayLabels(data, forceTakeAway = true)
+                    val result = labelPrinter.printTakeAwayLabels(data, forceTakeAway = (data.order.orderType == OrderType.TAKE_AWAY))
                     toast(result.message)
                 }
             }

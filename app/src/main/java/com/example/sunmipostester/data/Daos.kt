@@ -110,6 +110,10 @@ interface OrderDao {
     )
     suspend fun cancelOrder(orderId: Long, staffId: Long?, staffSyncId: String?, atMs: Long)
 
+    /** Update service type (DINE_IN vs TAKE_AWAY) and reset syncedAtMs so it re-pushes to server. */
+    @Query("UPDATE orders SET orderType = :orderType, syncedAtMs = NULL WHERE id = :orderId")
+    suspend fun updateOrderType(orderId: Long, orderType: OrderType)
+
     /** Revenue of PAID orders created within the given time window. */
     @Query(
         """

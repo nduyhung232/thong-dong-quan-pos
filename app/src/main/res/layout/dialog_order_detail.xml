@@ -113,6 +113,50 @@
             android:textSize="13sp" />
     </LinearLayout>
 
+    <!-- Hình thức phục vụ (Ăn tại chỗ / Mang về) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:background="#EFF6FF"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hình thức phục vụ (chọn để đổi):"
+            android:textColor="#1E3A8A"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rgOrderType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbDineIn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🍽 Ăn tại chỗ"
+                android:textColor="#1E293B"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbTakeAway"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🛍 Mang về"
+                android:textColor="#1E293B"
+                android:textSize="14sp" />
+        </RadioGroup>
+    </LinearLayout>
+
     <!-- Buttons -->
     <!-- 1. COPY BUTTON -->
     <com.google.android.material.button.MaterialButton

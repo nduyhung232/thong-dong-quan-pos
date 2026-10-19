@@ -178,6 +178,14 @@ class PosRepository(context: Context) {
         orderDao.cancelOrder(orderId, staffId, staffSyncId, System.currentTimeMillis())
     }
 
+    /**
+     * Update order type (DINE_IN vs TAKE_AWAY). Clears `syncedAtMs`
+     * so the change is pushed to the server on the next sync.
+     */
+    suspend fun updateOrderType(orderId: Long, orderType: OrderType) = io {
+        orderDao.updateOrderType(orderId, orderType)
+    }
+
     /** Paid revenue and order count within a time window (inclusive). */
     suspend fun revenueSummary(fromMs: Long, toMs: Long): Pair<Int, Int> = io {
         orderDao.revenueBetween(fromMs, toMs) to orderDao.paidCountBetween(fromMs, toMs)
