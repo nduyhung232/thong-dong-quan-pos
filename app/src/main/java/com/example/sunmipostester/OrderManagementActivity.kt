@@ -194,12 +194,22 @@ class OrderManagementActivity : SecuredActivity() {
                 dialogBinding.tvOrderStatusBadge.setTextColor(Color.parseColor("#991B1B"))
             }
 
-            val itemsSb = StringBuilder()
-            data.items.forEachIndexed { idx, item ->
-                itemsSb.append("${idx + 1}. ${item.productName}\n")
-                itemsSb.append("   ${item.quantity} x ${TextFormat.vnd(item.unitPrice)} = ${TextFormat.vnd(item.lineTotal)}\n")
+            val totalItemQty = data.items.sumOf { it.quantity }
+            dialogBinding.tvOrderItemsHeader.text = "DANH SÁCH MÓN ($totalItemQty món):"
+
+            if (data.items.isEmpty()) {
+                dialogBinding.tvOrderItems.text = "(Không có chi tiết món)"
+            } else {
+                val itemsSb = StringBuilder()
+                data.items.forEachIndexed { idx, item ->
+                    itemsSb.append("${idx + 1}. ${item.productName}\n")
+                    itemsSb.append("   ${item.quantity} x ${TextFormat.vnd(item.unitPrice)} = ${TextFormat.vnd(item.lineTotal)}")
+                    if (idx < data.items.size - 1) {
+                        itemsSb.append("\n\n")
+                    }
+                }
+                dialogBinding.tvOrderItems.text = itemsSb.toString()
             }
-            dialogBinding.tvOrderItems.text = itemsSb.toString().trimEnd()
 
             dialogBinding.tvOrderTotal.text = TextFormat.vnd(o.total)
             val paySb = StringBuilder()

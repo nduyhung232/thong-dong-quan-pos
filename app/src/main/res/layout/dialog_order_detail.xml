@@ -1,269 +1,286 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:fillViewport="true">
 
-    <!-- Header: Title + Status badge -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tvOrderTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Chi tiết đơn #123"
-            android:textColor="#1F2D3D"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvOrderStatusBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#D1FAE5"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:text="ĐÃ THANH TOÁN"
-            android:textColor="#065F46"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvOrderSubtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textColor="#666666"
-        android:textSize="13sp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="10dp"
-        android:background="#E5E7EB" />
-
-    <!-- Content: Items and financial breakdown -->
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:maxHeight="260dp">
-
-        <TextView
-            android:id="@+id/tvOrderItems"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="4dp"
-            android:textColor="#1F2937"
-            android:textSize="14sp" />
-    </androidx.core.widget.NestedScrollView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="10dp"
-        android:background="#E5E7EB" />
-
-    <!-- Summary Box -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:background="#F3F4F6"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="20dp">
 
+        <!-- Header: Title + Status badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tvOrderTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Tổng tiền:"
-                android:textColor="#1F2937"
-                android:textSize="15sp"
+                android:text="Chi tiết đơn #123"
+                android:textColor="#1F2D3D"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvOrderTotal"
+                android:id="@+id/tvOrderStatusBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#B91C1C"
-                android:textSize="17sp"
+                android:background="#D1FAE5"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="ĐÃ THANH TOÁN"
+                android:textColor="#065F46"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tvPaymentDetails"
+            android:id="@+id/tvOrderSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="#4B5563"
+            android:textColor="#666666"
             android:textSize="13sp" />
-    </LinearLayout>
-
-    <!-- Tùy chỉnh: Hình thức phục vụ & Phương thức thanh toán -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:background="#EFF6FF"
-        android:orientation="vertical"
-        android:padding="10dp">
-
-        <!-- 1. Hình thức phục vụ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hình thức phục vụ:"
-            android:textColor="#1E3A8A"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/rgOrderType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/rbDineIn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🍽 Ăn tại chỗ"
-                android:textColor="#1E293B"
-                android:textSize="14sp" />
-
-            <RadioButton
-                android:id="@+id/rbTakeAway"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🛍 Mang về"
-                android:textColor="#1E293B"
-                android:textSize="14sp" />
-        </RadioGroup>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="6dp"
-            android:background="#DBEAFE" />
+            android:layout_marginVertical="10dp"
+            android:background="#E5E7EB" />
 
-        <!-- 2. Phương thức thanh toán -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phương thức thanh toán:"
-            android:textColor="#1E3A8A"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/rgPaymentMethod"
+        <!-- Content: Danh sách món đã gọi -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:background="#F9FAFB"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvOrderItemsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="DANH SÁCH MÓN ĐÃ ĐẶT:"
+                android:textColor="#374151"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvOrderItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="5dp"
+                android:textColor="#1F2937"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="#E5E7EB" />
+
+        <!-- Summary Box -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="#F3F4F6"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tổng tiền:"
+                    android:textColor="#1F2937"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvOrderTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#B91C1C"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPaymentDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#4B5563"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Tùy chỉnh: Hình thức phục vụ & Phương thức thanh toán -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="#EFF6FF"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <!-- 1. Hình thức phục vụ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hình thức phục vụ:"
+                android:textColor="#1E3A8A"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rgOrderType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbDineIn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🍽 Ăn tại chỗ"
+                    android:textColor="#1E293B"
+                    android:textSize="14sp" />
+
+                <RadioButton
+                    android:id="@+id/rbTakeAway"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🛍 Mang về"
+                    android:textColor="#1E293B"
+                    android:textSize="14sp" />
+            </RadioGroup>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="6dp"
+                android:background="#DBEAFE" />
+
+            <!-- 2. Phương thức thanh toán -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phương thức thanh toán:"
+                android:textColor="#1E3A8A"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rgPaymentMethod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbPayCash"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="💵 Tiền mặt"
+                    android:textColor="#1E293B"
+                    android:textSize="14sp" />
+
+                <RadioButton
+                    android:id="@+id/rbPayTransfer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="💳 Chuyển khoản"
+                    android:textColor="#1E293B"
+                    android:textSize="14sp" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <!-- 1. COPY BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCopyOrder"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:backgroundTint="#059669"
+            android:text="📋 SAO CHÉP ĐƠN NÀY (ĐẶT LẠI)"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <!-- 2. REPRINT INVOICE & REPRINT LABEL BUTTONS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/rbPayCash"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReprintOrder"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="46dp"
                 android:layout_weight="1"
-                android:text="💵 Tiền mặt"
-                android:textColor="#1E293B"
-                android:textSize="14sp" />
+                android:layout_marginEnd="5dp"
+                android:text="🧾 IN HÓA ĐƠN"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
-            <RadioButton
-                android:id="@+id/rbPayTransfer"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReprintLabel"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="46dp"
                 android:layout_weight="1"
-                android:text="💳 Chuyển khoản"
-                android:textColor="#1E293B"
-                android:textSize="14sp" />
-        </RadioGroup>
-    </LinearLayout>
+                android:layout_marginStart="5dp"
+                android:text="🏷 IN LẠI TEM"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-    <!-- Buttons -->
-    <!-- 1. COPY BUTTON -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCopyOrder"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:backgroundTint="#059669"
-        android:text="📋 SAO CHÉP ĐƠN NÀY (ĐẶT LẠI)"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
-    <!-- 2. REPRINT INVOICE & REPRINT LABEL BUTTONS -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-
+        <!-- 3. CANCEL ORDER (Visible only if eligible) -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnReprintOrder"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="0dp"
-            android:layout_height="46dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp"
-            android:text="🧾 IN HÓA ĐƠN"
+            android:id="@+id/btnCancelOrder"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="6dp"
+            android:text="❌ HỦY ĐƠN HÀNG"
+            android:textColor="#DC2626"
+            app:strokeColor="#DC2626"
             android:textSize="13sp"
             android:textStyle="bold" />
 
+        <!-- 4. CLOSE BUTTON -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnReprintLabel"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="0dp"
-            android:layout_height="46dp"
-            android:layout_weight="1"
-            android:layout_marginStart="5dp"
-            android:text="🏷 IN LẠI TEM"
-            android:textSize="13sp"
-            android:textStyle="bold" />
+            android:id="@+id/btnCloseDialog"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="4dp"
+            android:text="ĐÓNG"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
     </LinearLayout>
-
-    <!-- 3. CANCEL ORDER (Visible only if eligible) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCancelOrder"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginTop="6dp"
-        android:text="❌ HỦY ĐƠN HÀNG"
-        android:textColor="#DC2626"
-        app:strokeColor="#DC2626"
-        android:textSize="13sp"
-        android:textStyle="bold" />
-
-    <!-- 4. CLOSE BUTTON -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCloseDialog"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginTop="4dp"
-        android:text="ĐÓNG"
-        android:textColor="#666666"
-        android:textSize="14sp" />
-
-</LinearLayout>
+</ScrollView>
