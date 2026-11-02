@@ -21,10 +21,18 @@ object OrderStore {
     fun isEmpty(): Boolean = lines.isEmpty()
 
     /** Add one unit, merging into an existing line for the same product without toppings. */
-    fun add(product: ProductEntity) {
-        val existing = lines.firstOrNull { it.product.id == product.id && it.selectedToppings.isEmpty() }
+    fun add(product: ProductEntity, unitPrice: Int = product.price) {
+        val existing = lines.firstOrNull {
+            it.product.id == product.id && it.unitPrice == unitPrice && it.selectedToppings.isEmpty()
+        }
         if (existing != null) existing.quantity++
-        else lines.add(CartLine(product = product, quantity = 1))
+        else lines.add(CartLine(product = product, quantity = 1, overrideUnitPrice = unitPrice))
+    }
+
+    fun updateChannelPrices(channel: SaleChannel) {
+        lines.forEach { line ->
+            line.overrideUnitPrice = line.product.priceFor(channel)
+        }
     }
 
     /** Increase one unit by lineId. */

@@ -1,5 +1,8 @@
 package com.example.sunmipostester
 
+import com.example.sunmipostester.data.SaleChannel
+import com.example.sunmipostester.data.priceFor
+
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -49,6 +52,8 @@ class SaleActivity : AppCompatActivity() {
     private lateinit var productAdapter: ProductAdapter
     private lateinit var cartAdapter: CartAdapter
 
+    private var currentChannel: SaleChannel = SaleChannel.DINE_IN
+    private var skipReceipt: Boolean = false
     private var allProducts: List<ProductEntity> = emptyList()
     private var selectedCategory: String? = null
     private var openShiftDialog: AlertDialog? = null
@@ -94,8 +99,8 @@ class SaleActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.categoryList.adapter = categoryAdapter
 
-        productAdapter = ProductAdapter { product ->
-            OrderStore.add(product)
+        productAdapter = ProductAdapter(channel = currentChannel) { product, unitPrice ->
+            OrderStore.add(product, unitPrice)
             refreshCart()
         }
         binding.productGrid.layoutManager = GridLayoutManager(this, 3)
@@ -133,12 +138,70 @@ class SaleActivity : AppCompatActivity() {
 
         binding.btnExpense.setOnClickListener { showExpenseDialog() }
 
+        setupChannelButtons()
+
+        binding.cbSkipReceipt.setOnCheckedChangeListener { _, isChecked ->
+            skipReceipt = isChecked
+        }
+
+        setupChannelButtons()
+
+        binding.cbSkipReceipt.setOnCheckedChangeListener { _, isChecked ->
+            skipReceipt = isChecked
+        }
+
         binding.btnPayOrder.setOnClickListener {
             if (OrderStore.isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn món trước", Toast.LENGTH_SHORT).show()
             } else {
                 showCheckoutDialog()
             }
+        }
+    }
+
+    private fun setupChannelButtons() {
+        updateChannelButtonsUI()
+        binding.btnChannelDineIn.setOnClickListener { selectChannel(SaleChannel.DINE_IN) }
+        binding.btnChannelShopee.setOnClickListener { selectChannel(SaleChannel.SHOPEE) }
+        binding.btnChannelGrab.setOnClickListener { selectChannel(SaleChannel.GRAB) }
+    }
+
+    private fun selectChannel(channel: SaleChannel) {
+        if (currentChannel == channel) return
+        currentChannel = channel
+        updateChannelButtonsUI()
+        productAdapter.setChannel(channel)
+        OrderStore.updateChannelPrices(channel)
+        refreshCart()
+        Toast.makeText(this, "Đã chọn bảng giá: ${channel.label}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateChannelButtonsUI() {
+        val white = Color.parseColor("#FFFFFF")
+        val dimText = Color.parseColor("#A0B2C6")
+
+        if (currentChannel == SaleChannel.DINE_IN) {
+            binding.btnChannelDineIn.setBackgroundColor(Color.parseColor("#059669"))
+            binding.btnChannelDineIn.setTextColor(white)
+        } else {
+            binding.btnChannelDineIn.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnChannelDineIn.setTextColor(dimText)
+        }
+
+        if (currentChannel == SaleChannel.SHOPEE) {
+            binding.btnChannelShopee.setBackgroundColor(Color.parseColor("#EE4D2D"))
+            binding.btnChannelShopee.setTextColor(white)
+        } else {
+            binding.btnChannelShopee.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnChannelShopee.setTextColor(dimText)
+        }
+
+        if (currentChannel == SaleChannel.GRAB) {
+            binding.btnChannelGrab.setBackgroundColor(Color.parseColor("#00B14F"))
+            binding.btnChannelGrab.setTextColor(white)
+        } else {
+            binding.btnChannelGrab.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnChannelGrab.setTextColor(dimText)
         }
     }
 
@@ -295,7 +358,7 @@ class SaleActivity : AppCompatActivity() {
 
     private fun loadProducts() {
         lifecycleScope.launch {
-            allProducts = repo.allProducts()
+            allProducts = repo.activeProducts()
             val categories = listOf("Tất cả") + allProducts.map { it.category.ifBlank { "Khác" } }.distinct()
             categoryAdapter.submit(categories)
             filterProducts()
@@ -377,6 +440,12 @@ class SaleActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = Unit
         })
 
+        dialogBinding.cbSkipReceipt.isChecked = skipReceipt
+        dialogBinding.cbSkipReceipt.setOnCheckedChangeListener { _, isChecked ->
+            skipReceipt = isChecked
+            binding.cbSkipReceipt.isChecked = isChecked
+        }
+
         refreshPaymentVisibility()
         val checkoutDialog = AlertDialog.Builder(this)
             .setTitle("Xác nhận đơn hàng")
@@ -420,7 +489,7 @@ class SaleActivity : AppCompatActivity() {
                             checkoutDialog.dismiss()
                             persistAndPrintOrder(
                                 orderLines, type, paymentMethod, finalPayable,
-                                discountType, finalDiscountInput
+                                discountType, finalDiscountInput, skipReceipt
                             )
                         }
                         .setNegativeButton("CHƯA", null)
@@ -429,7 +498,7 @@ class SaleActivity : AppCompatActivity() {
                     checkoutDialog.dismiss()
                     persistAndPrintOrder(
                         orderLines, type, paymentMethod, cashAmount,
-                        discountType, finalDiscountInput
+                        discountType, finalDiscountInput, skipReceipt
                     )
                 }
             }
@@ -477,7 +546,8 @@ class SaleActivity : AppCompatActivity() {
         method: PaymentMethod,
         cashReceived: Int,
         discountType: DiscountType,
-        discountInput: Int
+        discountInput: Int,
+        skipReceipt: Boolean = this.skipReceipt
     ) {
         binding.btnPayOrder.isEnabled = false
         val staff = Session.current
@@ -499,7 +569,7 @@ class SaleActivity : AppCompatActivity() {
                     binding.btnPayOrder.isEnabled = true
                     return@launch
                 }
-                printPaidOrder(saved, orderType)
+                printPaidOrder(saved, orderType, skipReceipt)
             } catch (error: Exception) {
                 Toast.makeText(this@SaleActivity, "Lỗi thanh toán: ${error.message}", Toast.LENGTH_LONG).show()
                 binding.btnPayOrder.isEnabled = true
@@ -507,23 +577,51 @@ class SaleActivity : AppCompatActivity() {
         }
     }
 
-    private fun printPaidOrder(saved: OrderWithItems, orderType: OrderType) {
+    private fun printPaidOrder(saved: OrderWithItems, orderType: OrderType, skipReceipt: Boolean) {
         if (orderType == OrderType.TAKE_AWAY) {
             printerProvider.withLabelPrinter(
                 onError = { error ->
                     Toast.makeText(this, "${printerError(error)} · Bỏ qua in tem", Toast.LENGTH_LONG).show()
-                    printReceipt(saved)
+                    if (skipReceipt) {
+                        finishPaidOrder()
+                    } else {
+                        printReceipt(saved)
+                    }
                 },
                 onReady = { labelPrinter ->
                     lifecycleScope.launch {
                         Toast.makeText(this@SaleActivity, labelPrinter.printTakeAwayLabels(saved).message, Toast.LENGTH_LONG).show()
-                        printReceipt(saved)
+                        if (skipReceipt) {
+                            finishPaidOrder()
+                        } else {
+                            printReceipt(saved)
+                        }
                     }
                 }
             )
         } else {
-            printKitchenAndReceipt(saved)
+            if (skipReceipt) {
+                printKitchenOnly(saved)
+            } else {
+                printKitchenAndReceipt(saved)
+            }
         }
+    }
+
+    private fun printKitchenOnly(saved: OrderWithItems) {
+        printerProvider.withPrinter(
+            onError = { error ->
+                Toast.makeText(this, printerError(error), Toast.LENGTH_LONG).show()
+                finishPaidOrder()
+            },
+            onReady = { printer ->
+                lifecycleScope.launch {
+                    val kitchenResult = printer.printKitchenCopy(saved)
+                    Toast.makeText(this@SaleActivity, "${kitchenResult.message} · Đã bỏ qua in hóa đơn", Toast.LENGTH_LONG).show()
+                    finishPaidOrder()
+                }
+            }
+        )
     }
 
     /** Always send a prep slip to the receipt printer after payment, then the customer copy. */

@@ -1,5 +1,8 @@
 package com.example.sunmipostester.sale
 
+import com.example.sunmipostester.data.SaleChannel
+import com.example.sunmipostester.data.priceFor
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -50,7 +53,8 @@ class CategoryAdapter(
 
 /** Grid of products for the selected category. */
 class ProductAdapter(
-    private val onAdd: (ProductEntity) -> Unit
+    private var channel: SaleChannel = SaleChannel.DINE_IN,
+    private val onAdd: (ProductEntity, Int) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.VH>() {
 
     private val items = mutableListOf<ProductEntity>()
@@ -59,6 +63,13 @@ class ProductAdapter(
         items.clear()
         items.addAll(products)
         notifyDataSetChanged()
+    }
+
+    fun setChannel(newChannel: SaleChannel) {
+        if (channel != newChannel) {
+            channel = newChannel
+            notifyDataSetChanged()
+        }
     }
 
     inner class VH(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
@@ -70,9 +81,10 @@ class ProductAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val p = items[position]
+        val unitPrice = p.priceFor(channel)
         holder.binding.productName.text = p.name
-        holder.binding.productPrice.text = TextFormat.vnd(p.price)
-        holder.binding.root.setOnClickListener { onAdd(p) }
+        holder.binding.productPrice.text = TextFormat.vnd(unitPrice)
+        holder.binding.root.setOnClickListener { onAdd(p, unitPrice) }
     }
 
     override fun getItemCount() = items.size

@@ -61,7 +61,7 @@ class Converters {
         ToppingEntity::class,
         ProductToppingEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -92,7 +92,7 @@ abstract class PosDatabase : RoomDatabase() {
                 PosDatabase::class.java,
                 "pos.db"
             )
-                .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                 .addCallback(object : RoomDatabase.Callback() {
                     override fun onOpen(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                         super.onOpen(db)
@@ -166,6 +166,12 @@ abstract class PosDatabase : RoomDatabase() {
                 )
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_product_toppings_productSyncId` ON `product_toppings` (`productSyncId`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_product_toppings_toppingSyncId` ON `product_toppings` (`toppingSyncId`)")
+            }
+        }
+        private val MIGRATION_8_9 = object : androidx.room.migration.Migration(8, 9) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `products` ADD COLUMN `priceShopee` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `products` ADD COLUMN `priceGrab` INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

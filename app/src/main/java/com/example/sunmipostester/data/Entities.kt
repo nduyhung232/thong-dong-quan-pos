@@ -34,6 +34,8 @@ data class ProductEntity(
     val syncId: String = UUID.randomUUID().toString(),
     val name: String,
     val price: Int,
+    val priceShopee: Int = 0,
+    val priceGrab: Int = 0,
     val category: String,
     val active: Boolean = true,
     /** Server's last-updated timestamp; used only for display/debugging. */

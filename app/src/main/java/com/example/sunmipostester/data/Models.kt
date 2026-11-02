@@ -1,6 +1,19 @@
 package com.example.sunmipostester.data
 
 /** Payment method for an order. Persisted in Room via [Converters]. */
+/** Sales channels for distinct pricing: Tại quán, Shopee, Grab */
+enum class SaleChannel(val label: String) {
+    DINE_IN("Tại quán"),
+    SHOPEE("Shopee"),
+    GRAB("Grab");
+}
+
+fun ProductEntity.priceFor(channel: SaleChannel): Int = when (channel) {
+    SaleChannel.DINE_IN -> price
+    SaleChannel.SHOPEE -> if (priceShopee > 0) priceShopee else price
+    SaleChannel.GRAB -> if (priceGrab > 0) priceGrab else price
+}
+
 enum class PaymentMethod(val label: String) {
     CASH("Tiền mặt"),
     TRANSFER("Chuyển khoản"),
@@ -16,9 +29,11 @@ data class CartLine(
     val lineId: String = java.util.UUID.randomUUID().toString(),
     val product: ProductEntity,
     var quantity: Int,
-    val selectedToppings: MutableList<ToppingEntity> = mutableListOf()
+    val selectedToppings: MutableList<ToppingEntity> = mutableListOf(),
+    var overrideUnitPrice: Int? = null
 ) {
-    val unitPriceWithToppings: Int get() = product.price + selectedToppings.sumOf { it.price }
+    val unitPrice: Int get() = overrideUnitPrice ?: product.price
+    val unitPriceWithToppings: Int get() = unitPrice + selectedToppings.sumOf { it.price }
     val lineTotal: Int get() = unitPriceWithToppings * quantity
     val toppingsDisplay: String get() = selectedToppings.joinToString(", ") { it.name }
 }

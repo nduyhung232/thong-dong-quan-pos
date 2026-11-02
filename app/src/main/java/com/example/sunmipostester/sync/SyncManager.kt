@@ -100,6 +100,8 @@ class SyncManager(
                 syncId = pSyncId,
                 name = p.getString("name"),
                 price = p.getInt("price"),
+                priceShopee = p.optInt("priceShopee", 0),
+                priceGrab = p.optInt("priceGrab", 0),
                 category = p.getString("category"),
                 active = p.getBoolean("active"),
                 updatedAtMs = p.optLong("updatedAtMs", System.currentTimeMillis())

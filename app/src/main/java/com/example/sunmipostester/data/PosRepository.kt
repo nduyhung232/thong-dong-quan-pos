@@ -500,6 +500,8 @@ class PosRepository(context: Context) {
         syncId: String,
         name: String,
         price: Int,
+        priceShopee: Int = 0,
+        priceGrab: Int = 0,
         category: String,
         active: Boolean,
         updatedAtMs: Long
@@ -509,14 +511,16 @@ class PosRepository(context: Context) {
             productDao.insert(
                 ProductEntity(
                     syncId = syncId, name = name, price = price,
+                    priceShopee = priceShopee, priceGrab = priceGrab,
                     category = category, active = active, updatedAtMs = updatedAtMs
                 )
             )
         } else {
             productDao.update(
                 existing.copy(
-                    name = name, price = price, category = category,
-                    active = active, updatedAtMs = updatedAtMs
+                    name = name, price = price,
+                    priceShopee = priceShopee, priceGrab = priceGrab,
+                    category = category, active = active, updatedAtMs = updatedAtMs
                 )
             )
         }
