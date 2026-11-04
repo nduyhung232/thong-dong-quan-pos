@@ -38,7 +38,12 @@ class ManageProductAdapter(
         val ctx = holder.itemView.context
 
         holder.binding.pName.text = p.name
-        holder.binding.pMeta.text = "${p.category} · ${TextFormat.vnd(p.price)}"
+        val priceDetails = buildString {
+            append("${p.category} · Quán: ${TextFormat.vnd(p.price)}")
+            p.priceShopee?.let { append(" | Shopee: ${TextFormat.vnd(it)}") }
+            p.priceGrab?.let { append(" | Grab: ${TextFormat.vnd(it)}") }
+        }
+        holder.binding.pMeta.text = priceDetails
         holder.binding.pInactive.visibility = if (p.active) View.GONE else View.VISIBLE
 
         holder.binding.btnToggleActive.setText(

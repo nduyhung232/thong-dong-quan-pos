@@ -560,6 +560,7 @@ class SaleActivity : AppCompatActivity() {
                     staffId = staff?.id,
                     staffName = staff?.name,
                     orderType = orderType,
+                    channel = currentChannel.name,
                     discountType = discountType,
                     discountInput = discountInput
                 )

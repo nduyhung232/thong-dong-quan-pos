@@ -229,6 +229,7 @@ class SyncManager(
             put("discountType", o.discountType.name)
             put("discountInput", o.discountInput)
             putNullable("discountCode", o.discountCode)
+            put("channel", o.channel)
             put("orderType", o.orderType.name)
             put("paymentMethod", o.paymentMethod.name)
             put("cashReceived", o.cashReceived)

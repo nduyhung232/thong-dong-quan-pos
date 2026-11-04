@@ -132,6 +132,7 @@ data class OrderEntity(
     val discountInput: Int = 0,
     /** The code string when discountType == CODE. */
     val discountCode: String? = null,
+    val channel: String = "DINE_IN",
     val orderType: OrderType = OrderType.DINE_IN,
     val paymentMethod: PaymentMethod,
     val cashReceived: Int,

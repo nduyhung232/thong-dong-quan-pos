@@ -44,9 +44,14 @@ class OrderAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val o = items[position]
         holder.binding.oNumber.text = "Đơn #${o.id}"
+        val channelTag = when (o.channel) {
+            "SHOPEE" -> " · [Shopee]"
+            "GRAB" -> " · [Grab]"
+            else -> ""
+        }
         val typeLabel = if (o.orderType == OrderType.TAKE_AWAY) "Mang về" else "Tại bàn"
         holder.binding.oMeta.text =
-            "${timeFormat.format(Date(o.createdAtMs))} · ${o.paymentMethod.label} · $typeLabel"
+            "${timeFormat.format(Date(o.createdAtMs))} · ${o.paymentMethod.label} · $typeLabel$channelTag"
         holder.binding.oTotal.text = TextFormat.vnd(o.total)
         holder.binding.oStatus.visibility =
             if (o.status == OrderStatus.CANCELLED) View.VISIBLE else View.GONE

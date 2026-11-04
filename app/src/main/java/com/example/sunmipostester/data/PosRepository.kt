@@ -85,6 +85,7 @@ class PosRepository(context: Context) {
         staffId: Long?,
         staffName: String?,
         orderType: OrderType = OrderType.DINE_IN,
+        channel: String = "DINE_IN",
         discountType: DiscountType = DiscountType.NONE,
         discountInput: Int = 0,
         appliedCode: DiscountCodeEntity? = null
@@ -120,6 +121,7 @@ class PosRepository(context: Context) {
             discountInput = discountInput,
             discountCode = if (discountType == DiscountType.CODE) appliedCode?.code else null,
             orderType = orderType,
+            channel = channel,
             paymentMethod = method,
             cashReceived = effectiveCashReceived,
             changeAmount = change,

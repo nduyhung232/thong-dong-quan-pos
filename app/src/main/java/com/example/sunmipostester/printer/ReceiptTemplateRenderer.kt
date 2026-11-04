@@ -72,7 +72,12 @@ object ReceiptTemplateRenderer {
         tvOrderTime.text = formatPaymentTime(order.createdAtMs)
 
         val tvOrderType = root.findViewById<TextView>(R.id.tvOrderType)
-        val typeLabel = if (order.orderType == OrderType.TAKE_AWAY) "Mang về" else "Tại bàn"
+        val channelTag = when (order.channel) {
+            "SHOPEE" -> " [Shopee]"
+            "GRAB" -> " [Grab]"
+            else -> ""
+        }
+        val typeLabel = (if (order.orderType == OrderType.TAKE_AWAY) "Mang về" else "Tại bàn") + channelTag
         val serviceLabel = tableName?.takeIf { order.orderType == OrderType.DINE_IN }
             ?.let { "$typeLabel - $it" }
             ?: typeLabel
@@ -189,7 +194,11 @@ object ReceiptTemplateRenderer {
         val order = data.order
 
         val tvType = root.findViewById<TextView>(R.id.tvKitchenOrderType)
-        tvType.text = if (order.orderType == OrderType.TAKE_AWAY) "MANG VỀ" else "TẠI CHỖ"
+        tvType.text = when (order.channel) {
+            "SHOPEE" -> "SHOPEE - MANG VỀ"
+            "GRAB" -> "GRAB - MANG VỀ"
+            else -> if (order.orderType == OrderType.TAKE_AWAY) "MANG VỀ" else "TẠI CHỖ"
+        }
 
         val tvTable = root.findViewById<TextView>(R.id.tvKitchenTableName)
         if (tableName != null && order.orderType == OrderType.DINE_IN) {
