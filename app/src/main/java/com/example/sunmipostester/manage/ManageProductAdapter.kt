@@ -40,8 +40,8 @@ class ManageProductAdapter(
         holder.binding.pName.text = p.name
         val priceDetails = buildString {
             append("${p.category} · Quán: ${TextFormat.vnd(p.price)}")
-            p.priceShopee?.let { append(" | Shopee: ${TextFormat.vnd(it)}") }
-            p.priceGrab?.let { append(" | Grab: ${TextFormat.vnd(it)}") }
+            if (p.priceShopee > 0) append(" | Shopee: ${TextFormat.vnd(p.priceShopee)}")
+            if (p.priceGrab > 0) append(" | Grab: ${TextFormat.vnd(p.priceGrab)}")
         }
         holder.binding.pMeta.text = priceDetails
         holder.binding.pInactive.visibility = if (p.active) View.GONE else View.VISIBLE
